@@ -1,0 +1,33 @@
+# NOTICE / 第三方组件署名
+
+本仓库包含来自第三方的组件。以下内容保留其原始版权与许可证，仅作整合（vendor）使用。
+
+---
+
+## evil-read-arxiv
+
+- 位置：`evil-read-arxiv/`
+- 上游：https://github.com/juliye2025/evil-read-arxiv
+- 作者：juliye2025
+- 许可证：MIT License
+- 说明：arXiv / Semantic Scholar / DBLP 在线论文发现工作流（`start-my-day`、`conf-papers`、`paper-analyze`、`extract-paper-images`、`paper-search`）。
+- 本仓库改动：将 skill 目录整合至本项目结构；路径占位符统一为 `{{VAULT_ROOT}}`；移除个人使用数据（`data/`）后以 vendor 方式纳入，未修改其核心逻辑。
+
+---
+
+## 本仓库自研部分
+
+以下内容由本仓库作者（catLee）编写，采用 MIT License（见根目录 `LICENSE`）：
+
+- `.opencode/skills/`：`zotero-collection-manager`、`zotero-data-fetcher`、`zotero-fulltext-archiver`、`zotero-analytical-writer`、`research-vault-ingest-orchestrator`、`research-vault-knowledge-maintainer`、`research-vault-literature-retrieval`
+- `templates/`：论文精读模板、知识库模板
+- 根目录：`README.md`、`AGENTS.example.md`、`opencode.json`、`.gitignore`
+
+---
+
+## 其他依赖（未内嵌，需另行安装）
+
+- **opencode**：skill 运行时（本仓库通过 `opencode.json` 的 `skills.paths` 注册 skill）。
+- **MinerU**：PDF → Markdown 全文解析（未内嵌）。
+- **Zotero Desktop**：文献库与本地 API。
+- **Python 依赖**：见 `evil-read-arxiv/requirements.txt`。
