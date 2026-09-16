@@ -45,7 +45,20 @@ still verify quotation pages directly against the read-only Original PDF.
 
 ## 1. 先确认实际 MinerU 环境
 
-不要重新安装 MinerU。先搜索 `{{VAULT_ROOT}}`、`{{RESEARCH_DIR}}` 和相关项目中的 `MinerU`、`mineru`、`magic-pdf`、批处理脚本、配置和历史输出。
+**不要重复安装 MinerU**。先搜索 `{{VAULT_ROOT}}`、`{{RESEARCH_DIR}}` 和相关项目中的 `MinerU`、`mineru`、`magic-pdf`、批处理脚本、配置和历史输出。先检查是否已有可用的 MinerU（可执行文件 / CLI / Python 模块 / 历史输出），只有确认不存在时才进入 1.1。
+
+### 1.1 确认未安装时：必须先询问用户是否安装（硬性要求）
+
+若穷尽搜索后确认环境中**没有可用的 MinerU**（`Test-Path`、命令探测、模块探测均失败）：
+
+1. **必须立即停下来，明确询问用户"是否安装 MinerU"**，并给出获取方式（指向仓库 `README.md` 的「MinerU 安装与模型下载」）。
+2. **在用户明确同意之前，绝对不得执行任何安装动作**——不得 `pip install` / `uv pip install`、不得运行 `mineru-models-download`、不得下载便携版、不得改动 `mineru.json` 或模型缓存。
+3. 用户同意后 → 按 README 指引安装；安装完成后回到本流程第 1 节重新确认环境，再继续归档。
+4. 用户拒绝、或环境无法满足（无网络 / 无 GPU / 磁盘不足 / 无权限）→ **不得伪造、不得静默跳过该步**；转为 `FULLTEXT_DEFERRED` 状态并如实记录原因，交由 `research-vault-ingest-orchestrator` 走 Note-only 降级路径（此时任何结论都不得标记为 `fulltext_verified`）。
+
+> **禁止行为**：未经询问就安装；未经用户同意就下载模型；静默跳过后声称已归档；用模型生成的"全文"冒充 MinerU 输出；在 `03fulltext` 无产物的情况下报告 `COMPLETE`。
+>
+> **不适用场景**：若用户在本次会话中已明确授权安装，或已有可用 MinerU（含历史输出可直接复用），则无需再次询问，直接按第 2、3 节处理。
 
 当前已发现的可复用调用链是（**可选：批量脚本需自备，本仓库不附带**；若脚本缺失，改为直接按 `AGENTS.md` 调用 MinerU CLI）：
 

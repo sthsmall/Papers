@@ -82,6 +82,63 @@ pip install -r evil-read-arxiv/requirements.txt
 
 **环境前置**：opencode（加载 skill）、Zotero Desktop（本地 API 端口 23119）、MinerU（PDF→Markdown）、Python 3.10+。
 
+## MinerU 安装与模型下载
+
+MinerU 是全文归档层（`zotero-fulltext-archiver`）的唯一硬依赖。**本仓库不自动安装它**：skill 会先搜索既有安装，若确认缺失，**会停下来询问你是否安装**，得到同意后才按本节指引执行。
+
+### 方式 A：pip 安装（通用）
+
+```bash
+pip install --upgrade pip
+pip install -U "mineru[all]"                 # 或：uv pip install -U "mineru[all]"
+
+# 国内网络：把模型源切到 modelscope（否则首次运行会去 HuggingFace 拉模型）
+export MINERU_MODEL_SOURCE=modelscope        # PowerShell: $env:MINERU_MODEL_SOURCE="modelscope"
+
+# 首次运行会自动下载模型；也可显式下载到本地
+mineru-models-download
+```
+
+### 方式 B：Windows 绿色便携版（免安装，本项目作者使用）
+
+下载便携包后解压到任意目录，调用前设置环境变量（以 `<MinerU根>` 为例）：
+
+```powershell
+$env:PYTHONPATH      = "<MinerU根>\src"
+$env:HF_HOME         = "<MinerU根>\models"
+$env:HF_HUB_OFFLINE  = "1"
+$env:MINERU_MODEL_SOURCE = "modelscope"
+$env:PYTHONUTF8      = "1"
+# 有 NVIDIA GPU 时（hybrid 后端）另设：
+$env:CUDA_PATH       = "<MinerU根>\cuda"
+
+& "<MinerU根>\WPy64-312101\python\python.exe" -m mineru.cli.client `
+    -p "<论文.pdf>" -o "<输出目录>" -b hybrid-engine --effort high
+```
+
+> 便携版没有 `mineru.exe` 时，用上面的 `python -m mineru.cli.client` 调用式；`{{MINERU_EXE}}` 指向的即该调用入口。
+
+### 校验安装
+
+```bash
+mineru --version          # pip 安装
+mineru -p <sample.pdf> -o <outdir> -b pipeline   # 跑通一篇小样本
+```
+
+### 后端选择建议
+
+| 场景 | 推荐 |
+| --- | --- |
+| 有 NVIDIA GPU，追求最高精度 | `-b hybrid-engine --effort high`（需 `CUDA_PATH`） |
+| Windows CPU / 无 GPU | `-b pipeline`（本项目历史验证的后端） |
+| 文本型 PDF 字符/连字符识别差（字体编码问题） | `-m ocr` 强制 OCR |
+
+### 没有 MinerU 时会发生什么
+
+- `zotero-fulltext-archiver` 停止 → 记录 `FULLTEXT_DEFERRED`，**不会伪造全文、不会写坏 `03fulltext/`**。
+- 其余环节可降级运行（Note-only）：Zotero 元数据/批注读取、基于**原始 PDF** 核验引文的中文精读笔记、知识页维护，以及在线发现（evil-read-arxiv）均不受影响。
+- 约束：无 Fulltext 时，任何结论**不得标记 `fulltext_verified`**。
+
 ## 工作流关系
 
 推荐按下面顺序使用：
@@ -200,6 +257,7 @@ data-fetcher → fulltext-archiver → analytical-writer → knowledge-maintaine
 
 | 环节 | 状态 | 说明 |
 | --- | --- | --- |
+| MinerU 本体 | **需自行安装** | 见上文「MinerU 安装与模型下载」。skill 检测到缺失时会**先询问用户是否安装**，未获明确同意前不执行任何安装/下载；拒绝则转 `FULLTEXT_DEFERRED` |
 | Zotero 访问层 | 已附带 | `.opencode/skills/zotero/scripts/zotero.py`（仅 Python 标准库依赖）；`zotero-*` skill 本身只要求能访问 Zotero 本地 API + Connector，可自行替换实现 |
 | Vault 目录骨架 | 已附带 | `vault-skeleton/`（含 `01knowledge/index.md`、`log.md`、`.meta/`、`02vault/_index/文献索引.md` 等初版） |
 | 写作模板 | 已附带 | `templates/`（论文精读模板 v2 + 知识库模板） |
