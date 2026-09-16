@@ -15,6 +15,9 @@ research/
 # evil-read-arxiv 个人使用数据（API 设置、收藏、反馈、偏好）
 evil-read-arxiv/data/
 
+# evil-read-arxiv 个人研究兴趣配置（公开仓库只含 config.example.yaml）
+evil-read-arxiv/config.yaml
+
 # ============================================================
 # 依赖 / 构建产物
 # ============================================================

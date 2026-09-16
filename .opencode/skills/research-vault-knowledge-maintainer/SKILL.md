@@ -1,6 +1,6 @@
 ---
 name: research-vault-knowledge-maintainer
-description: "Maintain the persistent Research Knowledge Wiki in {{VAULT_ROOT}}\\knowledge from existing analytical literature notes. Use when creating or incrementally updating cross-paper themes, concepts, methods, relationships, controversies, syntheses, the knowledge index or append-only log; or when linting traceability, duplicates, conflicts, and stale claims. Preserve note-first retrieval and use linked MinerU fulltexts only for targeted verification of precise claims."
+description: "Maintain the persistent Research Knowledge Wiki in {{VAULT_ROOT}}\\01knowledge from existing analytical literature notes. Use when creating or incrementally updating cross-paper themes, concepts, methods, relationships, controversies, syntheses, the knowledge index or append-only log; or when linting traceability, duplicates, conflicts, and stale claims. Preserve note-first retrieval and use linked MinerU fulltexts only for targeted verification of precise claims."
 ---
 
 # Research Vault Knowledge Maintainer

@@ -21,17 +21,21 @@ except ImportError:
     PubMed = None
 
 def load_config():
-    # Try to find config.yaml in the root directory
-    config_path = Path(__file__).resolve().parents[2] / "config.yaml"
-    if not config_path.exists():
-        config_path = Path("config.yaml")
-    
-    if not config_path.exists():
-        logger.error(f"Config file not found at {config_path}")
-        return {}
-        
-    with open(config_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f) or {}
+    # Prefer a user config.yaml; fall back to the shipped config.example.yaml
+    # so the skill works out-of-the-box in a fresh clone.
+    candidates = [
+        Path(__file__).resolve().parents[2] / "config.yaml",
+        Path("config.yaml"),
+        Path(__file__).resolve().parents[2] / "config.example.yaml",
+        Path("config.example.yaml"),
+    ]
+    for config_path in candidates:
+        if config_path.exists():
+            with open(config_path, "r", encoding="utf-8") as f:
+                return yaml.safe_load(f) or {}
+
+    logger.error("Config file not found (looked for config.yaml / config.example.yaml)")
+    return {}
 
 def title_to_filename(title: str) -> str:
     """Follow the project's naming convention for Obsidian notes"""

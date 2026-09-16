@@ -26,14 +26,16 @@ Papers/
 ├── AGENTS.example.md        # 脱敏版项目说明；复制为 AGENTS.md 并填写占位符路径
 ├── opencode.json            # skills.paths 注册两个 skill 目录
 ├── .opencode/
-│   └── skills/              # cheneternity 的 Zotero 工作流（按作者独立）
+│   └── skills/              # 本仓库自研的 Zotero 工作流（7 个）
 │       ├── zotero-collection-manager/
 │       ├── zotero-data-fetcher/
 │       ├── zotero-fulltext-archiver/
 │       ├── zotero-analytical-writer/
 │       ├── research-vault-ingest-orchestrator/
 │       ├── research-vault-knowledge-maintainer/
-│       └── research-vault-literature-retrieval/
+│       ├── research-vault-literature-retrieval/
+│       └── zotero/          # 第三方 helper skill（提供 scripts/zotero.py）
+├── vault-skeleton/          # 最小可用 Vault 骨架（01knowledge/02vault/03fulltext/99_System）
 ├── templates/
 │   ├── 论文精读模板.md
 │   └── 知识库模板/
@@ -43,7 +45,7 @@ Papers/
 │       ├── 方法模板.md
 │       ├── 关系模板.md
 │       └── 争议模板.md
-└── evil-read-arxiv/         # juliye2025 的在线发现（按作者独立，保留上游仓库）
+└── evil-read-arxiv/         # juliye2025 的在线发现（按作者独立，vendor 整合）
     ├── skills/              # 5 个 skill，跟随上游仓库
     │   ├── start-my-day/
     │   ├── conf-papers/
@@ -52,14 +54,33 @@ Papers/
     │   └── paper-search/
     ├── web/                 # Next.js 论文推荐网页端（暂不配置）
     ├── tests/
-    ├── config.example.yaml  # 研究兴趣配置模板
-    ├── config.yaml          # 示例配置（vault_path 已改为占位符）
+    ├── config.example.yaml  # 研究兴趣配置模板（复制到 {{VAULT_ROOT}}/99_System/Config/research_interests.yaml）
     └── requirements.txt     # Python 依赖
 ```
 
 - `.opencode/skills/` 与 `evil-read-arxiv/skills/` 都是 opencode skill 目录，通过 `opencode.json` 的 `skills.paths` 注册，启动时自动加载。
 - 两个作者的工作流按仓库分离，便于各自独立更新维护。
-- `templates/` 是 Vault 模板，使用时复制到 `{{VAULT_ROOT}}\模板\`（见下）。
+- `templates/` 是 Vault 写作模板，`vault-skeleton/` 是 Vault 目录骨架；两者都需复制到 `{{VAULT_ROOT}}`（见下）。
+- `config.yaml` 未入库（个人研究兴趣配置），请从 `config.example.yaml` 生成，详见下文。
+
+## 快速开始
+
+```bash
+# 1. 克隆
+git clone https://github.com/sthsmall/Papers
+cd Papers
+# 2. 配置占位符（复制后填写 {{VAULT_ROOT}} 等实际路径）
+copy AGENTS.example.md AGENTS.md
+# 3. 初始化你的 Vault（目录骨架 + 写作模板）
+robocopy vault-skeleton "<你的Vault根>" /E /XC /XN /XO
+xcopy templates "<你的Vault根>\模板\" /E /I
+# 4. 生成研究兴趣配置（或直接编辑 vault-skeleton 提供的初版）
+copy evil-read-arxiv\config.example.yaml "<你的Vault根>\99_System\Config\research_interests.yaml"
+# 5. 安装 Python 依赖
+pip install -r evil-read-arxiv/requirements.txt
+```
+
+**环境前置**：opencode（加载 skill）、Zotero Desktop（本地 API 端口 23119）、MinerU（PDF→Markdown）、Python 3.10+。
 
 ## 工作流关系
 
@@ -83,7 +104,9 @@ Papers/
 - `extract-paper-images`：优先从 arXiv 源码包提取论文图片。
 - `paper-search`：在已有笔记中按标题/作者/关键词/领域搜索。
 
-**配置**：研究兴趣位于 `{{VAULT_ROOT}}/99_System/Config/research_interests.yaml`（复制 `evil-read-arxiv/config.example.yaml` 生成并修改）。依赖 `pip install -r evil-read-arxiv/requirements.txt`。
+**配置**：研究兴趣位于 `{{VAULT_ROOT}}/99_System/Config/research_interests.yaml`（`vault-skeleton/` 已提供初版，也可复制 `evil-read-arxiv/config.example.yaml` 生成）。依赖 `pip install -r evil-read-arxiv/requirements.txt`。
+
+> 注：`evil-read-arxiv/config.yaml` 为个人配置，**未入库**。`paper-search` 在找不到 `config.yaml` 时会自动回退读取 `config.example.yaml`。
 
 > 与本地管线的分工：`paper-analyze` / `paper-search` 与 `zotero-analytical-writer` / `research-vault-literature-retrieval` 功能重叠；在线发现类（start-my-day / conf-papers / extract-paper-images）是本项目的互补核心。
 
@@ -171,16 +194,34 @@ data-fetcher → fulltext-archiver → analytical-writer → knowledge-maintaine
 - 增加安装说明或依赖说明
 - 为每个 skill 单独补充测试样例或演示数据
 
+## 已知依赖与缺口
+
+本仓库的 skill 文档与模板是完整的，但以下环节需要使用者自备（skill 内已标注为"可选/需自备"）：
+
+| 环节 | 状态 | 说明 |
+| --- | --- | --- |
+| Zotero 访问层 | 已附带 | `.opencode/skills/zotero/scripts/zotero.py`（仅 Python 标准库依赖）；`zotero-*` skill 本身只要求能访问 Zotero 本地 API + Connector，可自行替换实现 |
+| Vault 目录骨架 | 已附带 | `vault-skeleton/`（含 `01knowledge/index.md`、`log.md`、`.meta/`、`02vault/_index/文献索引.md` 等初版） |
+| 写作模板 | 已附带 | `templates/`（论文精读模板 v2 + 知识库模板） |
+| MinerU 批量脚本 | **需自备** | 如 `{{RESEARCH_DIR}}\mineru_batch_runner.py`、`{{VAULT_ROOT}}\tools\run_mineru_production.py`；缺失时直接按 `AGENTS.md` 调用 MinerU CLI |
+| 链接一致性校验脚本 | **需自备** | 如 `{{RESEARCH_DIR}}\zotero_batch\validate_research_vault_literature_links.py`；缺失时按 skill 内检查项人工核对 |
+| Knowledge 校验器 | **需自备** | `research-vault-knowledge-maintainer/scripts/validate_research_vault_knowledge.py` 未随仓库发布；缺失时按 `validation-contract.md` 检查项人工核对 |
+| 可选维护索引 | 可选 | `02vault/_index/` 下 `研究主题索引.md`、`研究方法索引.md`、`字段补全检查.md`；检索 skill 会"缺失则跳过" |
+
+> 上述"需自备"项是本工作流在原作者环境中使用的外部脚本，仓库未包含（也不影响 skill 逻辑本身）。如果你实现了等价脚本，欢迎自行补充。
+
 ## 许可证与署名
 
-- 本仓库自研部分（`.opencode/skills/`、`templates/` 等）：**MIT License**，见 [LICENSE](LICENSE)。
-- `evil-read-arxiv/`：版权归 [juliye2025](https://github.com/juliye2025/evil-read-arxiv)，同样为 **MIT License**，以 vendor 方式整合。
+- 本仓库自研部分（`.opencode/skills/` 中 7 个 `zotero-*`/`research-vault-*`、`templates/`、`vault-skeleton/` 等）：**MIT License**，见 [LICENSE](LICENSE)。
+- `evil-read-arxiv/`：版权归 [juliye2025](https://github.com/juliye2025/evil-read-arxiv)，**MIT License**，以 vendor 方式整合。
+- `.opencode/skills/zotero/`：第三方 helper skill，**上游许可证未声明**，公开再分发前请先确认授权（详见 [NOTICE](NOTICE)）。
 - 完整第三方署名见 [NOTICE](NOTICE)。
 
 ## 仓库不包含的内容
 
-为避免体积与版权问题，以下内容**不入库**（见 `.gitignore`）：
+为避免体积、版权与隐私问题，以下内容**不入库**（见 `.gitignore`）：
 
 - `research/`：论文 PDF 与 MinerU 运行产物。
 - `evil-read-arxiv/data/`：个人 API 设置、收藏、反馈与偏好。
+- `evil-read-arxiv/config.yaml`：个人研究兴趣配置（请用 `config.example.yaml` 生成）。
 - `AGENTS.md`：本机专属路径映射（请用 `AGENTS.example.md` 复制生成）。

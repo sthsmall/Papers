@@ -18,7 +18,7 @@ Current production layout:
 - Formal Fulltext: `{{VAULT_ROOT}}\03fulltext`
 - Knowledge machine metadata: `{{VAULT_ROOT}}\01knowledge\.meta`
 - Knowledge page templates: `{{VAULT_ROOT}}\模板\知识库模板`
-- MinerU production runner: `{{VAULT_ROOT}}\tools\run_mineru_production.py`
+- MinerU production runner（可选，需自备；本仓库不附带）: `{{VAULT_ROOT}}\tools\run_mineru_production.py` —— 缺失时直接按 `AGENTS.md` 调用 MinerU CLI
 - Canonical Analytical Note template: `{{VAULT_ROOT}}\模板\论文精读模板.md`
 
 The stable identity is `zotero_key` (parent item); `pdf_key` identifies its PDF attachment. A title is display-only and may be used for human sanity checks, never as the primary key.

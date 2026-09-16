@@ -15,6 +15,16 @@
 
 ---
 
+## zotero（helper skill）
+
+- 位置：`.opencode/skills/zotero/`
+- 来源：Zotero skill for Codex（随 opencode/Codex 生态分发的辅助技能）
+- 许可证：**上游未声明许可证（未核实）**。本仓库仅作工作流依赖整合；如需公开再分发，请先向上游确认授权，或仅保留自实现的替代 helper。
+- 说明：提供 `scripts/zotero.py`——仅依赖 Python 标准库的 Zotero Desktop 本地 API（`http://127.0.0.1:23119`）与 Connector 封装，用于元数据读取、BibTeX/RIS 导入、索引全文读取等。
+- 注意：`zotero-*` 系列 skill 本身不硬编码该脚本，仅要求能访问 Zotero 本地 API + Connector；若不使用本 helper，可自行实现等价访问层。
+
+---
+
 ## 本仓库自研部分
 
 以下内容由本仓库作者（catLee）编写，采用 MIT License（见根目录 `LICENSE`）：

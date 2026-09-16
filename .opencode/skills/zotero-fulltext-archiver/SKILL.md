@@ -47,7 +47,7 @@ still verify quotation pages directly against the read-only Original PDF.
 
 不要重新安装 MinerU。先搜索 `{{VAULT_ROOT}}`、`{{RESEARCH_DIR}}` 和相关项目中的 `MinerU`、`mineru`、`magic-pdf`、批处理脚本、配置和历史输出。
 
-当前已发现的可复用调用链是：
+当前已发现的可复用调用链是（**可选：批量脚本需自备，本仓库不附带**；若脚本缺失，改为直接按 `AGENTS.md` 调用 MinerU CLI）：
 
 `{{RESEARCH_DIR}}\mineru_batch_runner.py` → `{{MINERU_EXE}}` → 系统临时输出目录 → `{{ARCHIVE_ROOT}}\mineru-staging\`。批量输出只能作为外部暂存；逐篇补齐 frontmatter、图片路径和 Note 关联并验证后，才复制到 `{{VAULT_ROOT}}\03fulltext\<collection>\`。
 
@@ -112,5 +112,5 @@ Vault 内部路径统一使用 `/`。缺失的 DOI 可留空，但不得伪造�
 
 1. 分析笔记补 `fulltext_path`，并可增加 `[[fulltext/<collection>/<zotero_key>]]` 入口；不因全文归档重写整篇笔记，模板化重排由 `zotero-analytical-writer` 单独负责。
 2. Fulltext 补 `note_path`，确认双方 `zotero_key`、`pdf_key` 一致。
-3. 运行 `{{RESEARCH_DIR}}\zotero_batch\validate_research_vault_literature_links.py`，只报告，不自动删除。
+3. 运行链接校验脚本（**可选，需自备**）：`{{RESEARCH_DIR}}\zotero_batch\validate_research_vault_literature_links.py`；脚本缺失时改为逐项核对下一条的双向链接要求，只报告，不自动删除。
 4. 只有 PDF、Fulltext、图片、Note、链接均有效时，才向 Collection Manager 报告 COMPLETE。

@@ -17,7 +17,7 @@ Run only the checks applicable to the observed state; never convert an omitted s
 
 ## Knowledge checks
 
-When Knowledge is updated or re-evaluated, run `research-vault-knowledge-maintainer/scripts/validate_research_vault_knowledge.py --vault {{VAULT_ROOT}}` and require exit code 0. Inspect the resulting checks for:
+When Knowledge is updated or re-evaluated, run the Knowledge validator `research-vault-knowledge-maintainer/scripts/validate_research_vault_knowledge.py --vault {{VAULT_ROOT}}` **if it is available**, and require exit code 0. This validator is **not bundled with this repository** (it is an optional, user-provided tool); when it is absent, perform the checks below manually. Inspect the resulting checks for:
 
 - Knowledge source links, claim/gap sidecars and statement drift;
 - source mismatch, embedded machine metadata, raw key leakage and template/schema compliance;
