@@ -86,6 +86,8 @@ pip install -r evil-read-arxiv/requirements.txt
 
 MinerU 是全文归档层（`zotero-fulltext-archiver`）的唯一硬依赖。**本仓库不自动安装它**：skill 会先搜索既有安装，若确认缺失，**会停下来询问你是否安装**，得到同意后才按本节指引执行。
 
+> **只询问一次**：该询问仅在**首次确认缺失**时发生；一旦 MinerU 已可用（或你已授权/已安装），后续任务直接使用，不再重复询问。
+
 ### 方式 A：pip 安装（通用）
 
 ```bash

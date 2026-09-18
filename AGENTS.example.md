@@ -18,6 +18,7 @@
 - 上述目录可能尚未创建。执行 skill 流程前先 `Test-Path` 确认；缺失时向用户确认，不要自动批量创建。
 - **MinerU 调用**：绿色便携版需先设置环境变量 `PYTHONPATH=<MinerU根>\src`、`HF_HOME=<MinerU根>\models`、`HF_HUB_OFFLINE=1`、`MINERU_MODEL_SOURCE=modelscope`、`PYTHONUTF8=1`，再执行 `<python> -m mineru.cli.client -p <pdf> -o <out> -b pipeline`。
 - **未检测到 MinerU 时的硬性约定**：先搜索既有 MinerU（可执行文件 / CLI / Python 模块 / 历史输出），**不要重复安装**。若确认确实没有可用 MinerU，**必须停下并询问用户"是否安装 MinerU"**，并指向 `README.md` 的「MinerU 安装与模型下载」。**未获用户明确同意前，不得执行任何安装或下载**（不得 `pip install`、不得下载模型/便携版）。用户拒绝或环境不满足时，转 `FULLTEXT_DEFERRED`（Note-only 降级），**不得静默跳过或伪造全文**。
+  - **只问一次**：该询问**仅在首次确认缺失时发生一次**；一旦 MinerU 已确认可用（或用户已授权/已安装），后续任务直接使用，不再重复询问。每次任务开始时只做一次轻量存在性探测即可。
 - **MinerU 精度选择**：有 NVIDIA GPU 时优先 `-b hybrid-engine --effort high`（需另设 `CUDA_PATH=<MinerU根>\cuda`）；文本型 PDF 若字符/连字符识别不佳（字体编码问题），改用 `-m ocr` 强制 OCR。归档 fulltext 的 frontmatter `source_type` 记录实际后端（如 `mineru`、`mineru-hybrid`、`mineru-ocr`）。
 - **Vault 模板**：`templates/` 下的模板首次使用需复制到 `{{VAULT_ROOT}}\模板\`（含 `论文精读模板.md` 和 `知识库模板\`）。skill 依赖此路径。
 - 涉及文献检索/精读/知识库任务时，优先加载对应的 `research-vault-*` 与 `zotero-*` skill（位于 `.opencode/skills/`），遵循其流程与证据规则。
