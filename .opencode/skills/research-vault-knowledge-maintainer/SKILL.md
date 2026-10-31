@@ -22,7 +22,7 @@ These paths take precedence over legacy folder names appearing in historical not
 - Resolve every scientific claim to one or more `zotero_key` values and Analytical Notes. For exact wording, definitions, model details, coefficients, formulas, or mechanisms, follow the note's `fulltext_path` and make a targeted search there.
 - Treat a Knowledge Page as a derived artifact. It may link to pages for navigation, but never use a Knowledge Page as evidence for another scientific claim.
 - On incremental ingestion, re-evaluate the prior synthesis against the new Analytical Note; do not treat prior knowledge text as supporting evidence.
-- A same-path Analytical Note template repair is a presentation/traceability maintenance action, not by itself a new scientific contribution. Re-check source-note resolution and validator coverage, but do not create or revise a Knowledge Page solely because the Note was normalized to `{{VAULT_ROOT}}\模板\论文精读模板.md`.
+- A same-path Analytical Note template repair is a presentation/traceability maintenance action, not by itself a new scientific contribution. Re-check source-note resolution and validator coverage, but do not create or revise a Knowledge Page solely because the Note was normalized to `{{VAULT_ROOT}}\模板\论文简读模板.md`.
 - Prefer updating an existing canonical page over creating a synonym. Use `aliases` for Chinese/English names and common variants.
 - Preserve disagreement. Use `agreement: mixed`, `conflicting`, or `insufficient` where the current Vault evidence does not support a single conclusion. Label explanations not stated by papers as `interpretation`.
 - Create a page only for a durable theme, recurrent method, shared relationship, real controversy, or clearly important emerging concept. Do not create one-node-per-term pages.
@@ -45,16 +45,18 @@ by validation or template-compliance checks.
 
 ## Knowledge Template Rule
 
-All user-facing Knowledge Pages must follow the current template stored at `{{VAULT_ROOT}}\模板\知识库模板`. Before creating or structurally refreshing Knowledge Pages, read and follow the current template. Do not invent an alternative visible page structure when a valid workspace template exists.
+All user-facing Knowledge Pages must follow the current templates stored at `.opencode/skills/research-vault-knowledge-maintainer/references/`. Before creating or structurally refreshing Knowledge Pages, read and follow the current template. Do not invent an alternative visible page structure when a valid workspace template exists.
+
+**Current Vault state (2026-10):** `01knowledge` currently contains five `knowledge-theme` pages. There are no concept/method/relation/controversy pages yet; their templates are available but not mandatory. The three former cross-cutting pages (mask/box roles, geometry, reliability) were merged into `01knowledge/微小目标 MOT 的表示、几何与可靠性.md` on 2026-10-28; do not recreate them as separate pages. Theme pages keep gaps inline under `## 6. 当前研究空白`; `.meta/gaps` sidecars are optional unless the Knowledge validator or acceptance suite is enabled.
 
 If a template change is only presentational, update the human-readable layer while preserving the frozen schema. If it would change the semantic schema, report `SCHEMA_REVIEW_REQUIRED` rather than changing fields, enums, IDs, or metadata locations automatically.
 
 ### Strict local template contract
 
-The actual template authority is the directory `{{VAULT_ROOT}}\模板\知识库模板`, not a remembered outline or a simplified evidence-list pattern. Before every Knowledge Page creation or material rewrite, read:
+The actual template authority is the directory `.opencode/skills/research-vault-knowledge-maintainer/references/`, not a remembered outline or a simplified evidence-list pattern. Before every Knowledge Page creation or material rewrite, read:
 
-1. `README_知识库模板说明.md`;
-2. the matching page template: `主题模板.md`, `概念模板.md`, `方法模板.md`, `关系模板.md`, or `争议模板.md`;
+1. `knowledge-schema.md`;
+2. the matching page template: `knowledge-theme-template.md`, `knowledge-concept-template.md`, `knowledge-method-template.md`, `knowledge-relation-template.md`, or `knowledge-controversy-template.md`;
 3. the current page and its canonical aliases in `01knowledge/index.md`.
 
 Preserve the template's visible section order, heading levels, summary callout, evidence tables, boundary sections, research-gap sections, usage/implication sections, and source-tracking sections. Do not replace a template page with a short “summary + source list”, a paper-by-paper abstract dump, or a generic “来源与边界” stub. A page is not template-compliant merely because its frontmatter validates.
@@ -93,7 +95,7 @@ All user-facing Knowledge titles, headings, synthesis, evidence descriptions, ga
 ## Workflow
 
 1. Read `02vault/_index/`, then candidate Analytical Notes. Build a coverage ledger recording title, `zotero_key`, note path, Fulltext availability, variables, methods, findings, limitations, and the page(s) to which each paper will be routed.
-2. Read `{{VAULT_ROOT}}\模板\知识库模板\README_知识库模板说明.md` and the matching page template before drafting. Read `01knowledge/index.md` and find canonical pages by title and aliases. Decide explicitly which pages to update, create, or leave unchanged.
+2. Read `.opencode/skills/research-vault-knowledge-maintainer/references/knowledge-schema.md` and the matching page template before drafting. Read `01knowledge/index.md` and find canonical pages by title and aliases. Decide explicitly which pages to update, create, or leave unchanged.
 3. For each precise claim, inspect the structured Note first and then search the linked Fulltext or PDF for the exact result and its qualifiers. Record the verification state; do not treat a Note-only summary as Fulltext evidence.
 4. Update evidence lists and cross-links. Keep `evidence_count` equal to the distinct Analytical Notes in `source_notes`; add a real-path source link for every supporting paper. It is a page-coverage count, never a claim-support count.
 5. Use the six page classes only: `knowledge-theme`, `knowledge-concept`, `knowledge-method`, `knowledge-relation`, `knowledge-controversy`, and `knowledge-synthesis`. A relation page must set `subject`, `relation`, `object`, and `agreement`.

@@ -1,78 +1,177 @@
 ---
 name: zotero-analytical-writer
-description: "使用 Zotero metadata、批注和 MinerU Fulltext，严格按 {{VAULT_ROOT}}\\模板\\论文精读模板.md 创建或更新 ResearchVault 中文精读笔记，并确保 Zotero 链接、公式与原文引用真实可追溯。"
+description: "使用 Zotero metadata、批注和 MinerU Fulltext，按 {{VAULT_ROOT}}\\模板\\论文简读模板.md 创建新笔记，或对既有笔记做方法段原位重写；确保公式、训练细节、配图与原文引用真实可追溯。"
 ---
 
 # Zotero Analytical Writer
 
-## Canonical template
+## 0. 默认工作习惯（先读 playbook）
 
-For every Note creation or content update, read `{{VAULT_ROOT}}\模板\论文精读模板.md` first and use it as the sole structural authority. Start a new Note by copying that template; for an existing Note, update it in place and normalize its body to the template rather than introducing a parallel structure.
+每次创建或重写笔记前，先读 `references/note-migration-playbook.md`。以下不是建议，是默认执行顺序：
 
-Keep the visible section order exactly as follows:
+- **读全文，不读摘要**：先定位并阅读 Fulltext 的 Method / Implementation / Training / Experiments / Ablation / Limitation 章节；旧笔记只用于身份、frontmatter、已有引文和其他章节，不能把旧方法段当事实来源。
+- **旧笔记只改方法段**：把 `## 方法` / `## 研究方法` 替换为 `## 三、方法详解`，frontmatter 与其他章节逐字保留；用区间替换并校验前后缀未变，不能出现第二个方法标题。
+- **方法段写机制**：按“问题 → 数据流（文字图）→ 逐模块机制 → 训练/推理配置 → 主结果/消融/反常 → 边界”组织；≥4,500 字符；有公式的论文 ≥2 个原文公式并保留编号，无公式写“原文无公式”；缺训练项写“论文未给”，不猜。
+- **配图与引文**：至少 4 图或注明原文不足；路径逐条验证；图注说明“这张图说明什么”。`引文核验` 至少 3 条逐字英文引文 + 页码状态，先 grep 再写。
+- **批量迁移要收口**：全库扫描 → 按主题分批 → 逐篇重写 → 全库验收 → 更新 `02vault/_index/文献索引.md` 的 `方法段` 列与 `02vault/_index/笔记重写状态.md` → 追加 `01knowledge/log.md`。
+- **完成判定**：不以“笔记存在/有方法标题”判断完成；以方法段内容、配图、公式、引文和扫描结果为准。批次报告/子代理报告不能替代独立扫描与抽查。删除前备份；不擅自 git commit。
 
-`基本信息 → 一句话摘要 → 论文贡献 → 任务与问题 → 方法（方法 0 总体框架 + 方法 1/2/3… 分块） → 评测与数据 → 主要发现 → 关联精读笔记 → 我的判断 → 开源与复现（可选）`
+## 1. 两种写作模式
 
-Keep the template's table, field labels, heading levels, and frontmatter fields. Replace every retained placeholder with verified content; remove unused optional formula blocks, surplus finding/quote pairs, and placeholder related-note links. Do not add legacy headings such as `研究对象`, `研究方法`, `数据来源`, `研究结论`, `研究对象与问题`, `整体流程`, `数据与证据定位`, `局限与后续问题`, or `Zotero信息`. 方法的"局限"信息放进方法块内与`我的判断`，数据缺陷放进`评测与数据`与`我的判断`。
+先判断是**新建笔记**还是**更新既有笔记**：新笔记以 `{{VAULT_ROOT}}\模板\论文简读模板.md` 为结构依据；旧笔记以同一模板的质量标准为依据，只做方法段原位重写，不强行整篇推倒。
 
-## 职责与语料顺序
+### 模式 A：新建笔记（简读格式）
 
-Writer 只负责分析层：`metadata + annotations + MinerU Fulltext + 必要时 PDF → 中文 analytical note`。
+复制 `论文简读模板.md`，保持可见章节顺序：
 
-- Fulltext 是原文证据，分析笔记是中文理解层；不得把二者混为一谈。
-- 保留现有的 `task`、`paradigm`、`data_scale`、`method_summary`、`key_metric`、`key_result`、`relevance`、中文逻辑重构、学术垃圾过滤、公式防乱码、Zotero URI 和 Dataview 刷新逻辑。
-- 不负责 PDF→MinerU；缺全文时交给 `zotero-fulltext-archiver`，不要自行伪造原文。
-- 若已有正式 Fulltext，先复用并校验，不因 Note 模板修整而重新运行 MinerU。
-
-## Knowledge handoff contract
-
-The Analytical Note is the structural-library layer for later Knowledge synthesis; it is not a substitute for the Knowledge Page template. Preserve machine-readable fields and make the following handoff explicit whenever the Note will feed Knowledge:
-
-- distinguish author-reported findings, methods, limitations, and the writer's interpretation;
-- retain the exact `zotero_key`, `note_path`, `fulltext_path`, formulas, quotations, and PDF/Fulltext entry points;
-- record which conclusions were checked against Fulltext and which remain Note-only;
-- never mark a Knowledge claim as `fulltext_verified` merely because the Note contains a summary;
-- if a field or conclusion cannot be located in the Note or Fulltext, write “未在当前材料中定位到可核验原文”，not a reconstructed quote or inferred page number.
-
-When a later Knowledge task asks for “all papers”, the Knowledge Maintainer must read the Note's structured fields and the linked Fulltext independently; the Writer must not collapse the two layers into a single unsupported summary.
-
-## Frontmatter 与稳定身份
-
-Keep the template frontmatter (`title`、`aliases`、`tags`、`created`、`source`、`author`、`year`、`task`、`paradigm`、`data_scale`、`method_summary`、`key_metric`、`key_result`、`relevance`) and replace its placeholders with verified values. Add the following identity and navigation fields after the template fields when the values are known:
-
-```yaml
-type: literature-note
-zotero_key: "Q22PFLNV"
-pdf_key: "4RMSR7ZR"
-doi: "..."
-collection: "创新经济地理"
-note_path: "论文库/创新经济地理/论文标题.md"
-fulltext_path: "fulltext/创新经济地理/Q22PFLNV.md"
+```text
+基本信息 / 元信息
+【论文速读 · 30 秒懂核心】
+一、核心贡献速览
+二、研究背景与动机
+三、方法详解
+四、实验结果与分析
+五、总结
+六、我们的判断（Vault 增补）
+引文核验（Vault 增补）
+关联笔记
 ```
 
-Do not batch-rewrite untouched historical Notes. When updating a specified Note, normalize that same file to the template and preserve verified content and stable identity; never create a duplicate Note. Add only confirmable fields and fulltext entry points. Treat `zotero_key` as the primary key and `pdf_key` as the attachment key. Prefer `note/<collection>/` for new Notes while continuing to support the Vault's current `论文库/` paths.
+- 元信息至少含：作者、年份/会议、来源、主题、链接、开源状态。
+- 【30 秒懂核心】用 3–5 句话写清“问题—做法—关键结果—边界”，不是 Abstract 翻译。
+- 核心贡献只写论文自述贡献（反查 Abstract/§1），不发明条目。
+- 研究背景与动机写“为什么现有方法不够”，不要复述 Related Work 目录。
 
-## 原文引用规则
+### 模式 B：更新既有笔记（方法段原位重写）
 
-- “主要发现 + 原文引用”中的原文必须真实出现在 MinerU Fulltext 或 Original PDF。
-- 严禁根据中文摘要反向生成英文 quote；定位不到时写“未在当前全文中定位到可核验原句”。
-- 引用要保留必要上下文，检查否定、条件、稳健性限定、假设和局限。
-- PDF 页码只有在可靠映射或实际 PDF 验证后才写入 `zotero://open-pdf/...?...page=` 或写入“PDF 第 n 页”；否则保留 Fulltext 链接并写“PDF 页码未验证”。不能因为 Fulltext 的 `page_mapping: unknown` 就猜页码，也不能因为页码未知而阻止通过原 PDF 直接核验引文。
-- 结论区每一条“主要发现”都要紧邻至少一条真实原文引用；先在 MinerU Fulltext 定位，再在 Original PDF 核对上下文、否定、条件、稳健性和页码。找不到原句时明确写“未在当前全文中定位到可核验原句”，不得反向生成 quote。
+对已存在的旧格式笔记，**默认只重写方法段，不整篇推倒**：
 
-## 内容与格式约束
+- 把 `## 方法` / `## 三、方法详解` 统一替换为 `## 三、方法详解`；
+- 保留原有的 `论文贡献 / 任务与问题 / 评测与数据 / 主要发现 / 我的判断 / 开源与复现`；
+- 方法段按本文第 2 节的质量标准重写；补 4 图（或按原文实际图数并注明）；校正结果/引文中已发现的错误；
+- 不因为模板不同而重命名或删除旧的贡献/结果/判断章节；需要调整时做最小改动。
 
-- `task` 概括研究任务（输入输出对象）；`paradigm` 定位范式；`data_scale`、`method_summary`、`key_metric`、`key_result`、`relevance` 必须来自真实材料，不复制大段摘要。
-- `论文贡献` 每条对应论文自述贡献（反查 Abstract/引言），不要发明贡献条目。
-- 方法区按论文实际方法数量组织成并列的"方法 1/方法 2/…"分块；纯单方法论文可退化为一段方法概述。每块至少含"解决的问题 + 关键设计 + 设计动机"，公式与消融证据按需取舍。
-- 过滤作者地址、单位、邮编、邮箱、基金号和排版垃圾；数据与方法缺失时如实说明。
-- 公式仅在原文可靠时保留；乱码或残片不强行解释，也不为占位符生成符号拆解。
-- 写入前检查 YAML、美元符号配对、`zotero://select/...` 和 PDF/Fulltext 入口。
-- 写入前检查标题层级、模板占位符是否清除、结论是否成对、公式是否闭合，以及 `fulltext_path` 与 Note↔Fulltext 双向入口是否存在。
-- `关联精读笔记` 只保留与研究问题、方法或结论存在直接关系的真实 Note；没有可确认的关联时，保留章节说明但移除示例链接。
+> 不要新增 `研究对象`、`研究方法`、`数据来源`、`研究结论`、`整体流程`、`数据与证据定位`、`局限与后续问题`、`Zotero信息` 等旧标题。方法的“局限”放在方法段末尾与`我们的判断`；数据缺陷放在`评测与数据`与`我们的判断`。
 
-## 写入与索引
+## 2. 方法段质量门（核心）
 
-1. 先判定是新建还是更新指定 Note；两种情况都先读取当前模板。更新时允许重排正文以匹配模板，但不得改变稳定身份或制造重复 Note。
-2. 在基本信息区的链接行加入 `全文 Markdown：[[fulltext/<collection>/<zotero_key>]]`（路径存在时），并保留可验证的 Zotero 入口。
-3. 新建论文笔记时才刷新四个根 Dataview 索引；更新既有 Note 不触发全库批量重写，但若标题、路径或索引字段变化，定向刷新受影响索引。
+方法段不是“模块名列表”，必须让读者不看原文也能理解机制。按以下顺序组织：
+
+1. **问题**：这个方法解决什么失效模式？为什么现有做法不够？
+2. **数据流**：输入是什么、经过哪些模块、输出是什么；用一张文字流程图或表格说清。
+3. **逐模块机制**：每个模块写“解决什么问题 → 输入/输出 → 具体算子/公式 → 为什么这样设计”。
+4. **训练/推理配置**：优化器、学习率、batch、epoch、输入尺寸、损失权重、冻结/可训练模块、数据划分、硬件。
+5. **结果与消融**：主结果表、关键消融、反常/掉点结果、作者解释或“作者未解释”。
+6. **边界**：任务错位（SOT 不能冒充 MOT）、数据集域差、单来源、无消融、未报告项。
+
+硬性要求：
+
+- **长度**：至少 **4,500 字符**；短论文/短文至少 **4,000 字符**，并在文末说明“原文较短”。不得用重复的模块名或空泛评价凑长度。
+- **公式**：有公式的论文至少 **2 个原文公式**；编号与原文一致，符号逐个解释。原文没有公式时明确写“原文无公式”；形式化转写必须标注“非原文公式”。
+- **训练细节**：能写就写全；原文没写的写“论文未给”，**不要猜**。至少检查：优化器、lr、batch、epoch、输入分辨率、损失权重、冻结策略、数据划分。
+- **事实与推断分开**：原文事实用陈述句；我们的解释/迁移判断放在`我们的判断`，标注“推断”。
+- **反常结果**：掉了、不单调、自相矛盾的实验结果必须写出来；作者解释与“作者未解释”分开。
+- **表格**：结果用 markdown 重排，不贴表格截图；数字与原文表格核对。
+
+### 方法段骨架（默认）
+
+````markdown
+## 三、方法详解
+
+> 阅读范围：§3.1–3.4（fulltext Lxx–Lyy）+ §4 结果 + §5 局限。公式编号沿用原文；未报告项不补猜。
+
+### 3.1 问题：这个方法解决什么失效模式
+### 3.2 数据流（文字流程图）
+```text
+输入 → 模块 A → 模块 B → 输出
+```
+### 3.3 逐模块机制
+### 3.4 训练与推理配置
+### 3.5 结果、消融与反常
+### 3.6 边界与失效模式
+
+#### 配图
+
+![图 n 说明](../../03fulltext/<collection>/images/<key>/xxx.jpg)
+
+*图 n：这张图说明什么。*
+
+#### 引文核验
+
+| 关键结论 | 原文引文 | 页码 |
+|---|---|---|
+| ... | "..." | PDF 页码未验证 |
+````
+
+- 方法段开头保留 `> 阅读范围：...（fulltext Lxx–Lyy）`，方便下次核验。
+- 配图与引文核验放在方法段末尾，不要散落到其他章节。
+- 如果原文没有公式/训练细节/图，按实际写“原文无公式/论文未给/原文仅 n 图”，不要留空。
+
+## 3. 配图规则
+
+- 每篇至少 **4 张**：架构 / 数据样例 / 主结果 / 定性或消融可视化。
+- 原文不足 4 张时，嵌入实际可用图并在方法段末尾注明“原文仅 n 图，未凑数”；不要用无关图或表格截图充数。
+- 统一归档：`03fulltext/<collection>/images/<key>/`；笔记引用写作：
+
+```markdown
+![图 n 说明](../../03fulltext/<collection>/images/<key>/xxx.jpg)
+
+*图 n：说明。*
+```
+
+- 图注写“这张图说明什么”，不要只写“Figure 3”。
+- 图片路径必须存在；写入后逐条检查。
+
+## 4. 引文与证据
+
+- 每条关键结论尽量配一条**能在 Fulltext 中 grep 到**的原文引用；引文必须逐字，不用中文摘要反向生成英文 quote。
+- 页码只有在 Original PDF 或可靠 page mapping 核验后才写“PDF 第 n 页”；否则写“PDF 页码未验证”。
+- OCR 连写/拼写差异（如 `parametereficient`、`oneto-one`、`oficial`）按全文原样转录，并注明“原文 OCR 将 X 连写/拼作 Y”。
+- 公式排版引用若无法逐字 grep，标注“公式排版，此处转写/省略”，不要冒充逐字引文。
+- 区分：作者报告的事实、作者的解释、我们的推断。`引文核验` 节列出已核验的引文与页码状态。
+
+## 5. Frontmatter 与稳定身份
+
+保留模板 frontmatter：
+
+`title / aliases / tags / created / source / author / year / type / zotero_key / pdf_key / doi / collection / note_path / fulltext_path / task / paradigm / data_scale / method_summary / key_metric / key_result / relevance`
+
+- `zotero_key` 是主键，`pdf_key` 是附件键；标题只用于显示与人工核对。
+- `task` 写研究任务（输入/输出对象）；`paradigm` 写范式；`data_scale` 写数据集/规模；`method_summary` 写机制摘要（不是模块名堆叠）；`key_metric` / `key_result` 写指标与关键数字；`relevance` 写与本项目的关系。
+- 更新既有笔记时保留稳定身份，不创建重复 Note；新增字段只加可确认的值。
+- 不批量重写未指定的历史笔记。
+
+## 6. 内容与格式约束
+
+- 过滤作者地址、单位、邮箱、基金号、排版垃圾。
+- 公式乱码或残片不强行解释；不伪造符号拆解。
+- 数据/方法缺失时如实说明；不把“没有报告”写成“没有做”。
+- `关联笔记` 只保留真实存在、与研究问题/方法/结论直接相关的 Note；没有就写“暂无”。
+- 写入前检查：YAML 可解析、`$$` 成对、标题层级、模板占位符清除、`fulltext_path` 与 Note↔Fulltext 双向入口存在、图片路径存在、引文可 grep。
+
+## 7. Knowledge handoff
+
+Note 是结构化理解层，不是 Knowledge 页的替代品。交给 Knowledge Maintainer 时保留：
+
+- 可机读字段与 `zotero_key` / `note_path` / `fulltext_path`；
+- 公式、引文、结果表、训练配置、边界；
+- 哪些结论已回查 Fulltext、哪些仍是 Note-only；
+- 不要把 Note 摘要直接标成 `fulltext_verified`；精确结论必须回到 `fulltext_path` 或原 PDF 定向核验。
+
+## 8. 写入与索引
+
+1. 新建笔记：按简读模板创建，刷新相关 Dataview 索引。
+2. 更新既有笔记：原位修改，不改变稳定身份；只有标题/路径/索引字段变化时才定向刷新索引。
+3. 写入后做一次自检：方法段长度、公式数、训练细节、图片数、引文 grep、YAML、双向链接。
+
+## 9. 批量迁移
+
+当任务不是单篇，而是“把旧笔记迁移到当前标准”时，按 `references/note-migration-playbook.md` 执行：
+
+1. **盘点**：运行 `scripts/scan_note_quality.py --vault "{{VAULT_ROOT}}"`，扫描 `02vault/**/*.md`（排除中文全译），记录方法段字符数、图片、公式、`引文核验`、YAML；分为 `FULL`（≥4,500）、`BORDER`（4,000–4,500）、`PENDING`（<4,000）。
+2. **分批**：按主题分组（VOS 经典 → 检测器/跟踪基础 → 卫星 MOT → SAM 适配 → RS/VIS），不要按文件名顺序无脑重写。
+3. **逐篇**：读 Fulltext 方法/训练/结果/消融/局限 → 只替换方法段 → 补图 → 补 `引文核验` → 自检。
+4. **验收**：运行同一脚本，确认 `HARD=0`；硬性失败项包括方法段长度、图片缺失/不足未注明、公式 <2 未注明、缺少 `引文核验`、引文未命中、YAML、旧/重复方法标题；软性提醒（空 `zotero_key`、正文内联引文的 OCR/LaTeX 差异）写入状态页。
+5. **收口**：更新 `文献索引.md` 的 `方法段` 列、重建 `笔记重写状态.md`、追加 `log.md`；删除旧索引前备份。
+
+不要用“已生成状态页”代替“笔记已达标”；状态页必须由实际扫描结果生成。

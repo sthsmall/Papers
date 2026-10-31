@@ -17,9 +17,9 @@ Current production layout:
 - Analytical Notes: `{{VAULT_ROOT}}\02vault`
 - Formal Fulltext: `{{VAULT_ROOT}}\03fulltext`
 - Knowledge machine metadata: `{{VAULT_ROOT}}\01knowledge\.meta`
-- Knowledge page templates: `{{VAULT_ROOT}}\模板\知识库模板`
+- Knowledge page templates: `.opencode/skills/research-vault-knowledge-maintainer/references/`
 - MinerU production runner（可选，需自备；本仓库不附带）: `{{VAULT_ROOT}}\tools\run_mineru_production.py` —— 缺失时直接按 `AGENTS.md` 调用 MinerU CLI
-- Canonical Analytical Note template: `{{VAULT_ROOT}}\模板\论文精读模板.md`
+- Canonical Analytical Note template: `{{VAULT_ROOT}}\模板\论文简读模板.md`
 
 The stable identity is `zotero_key` (parent item); `pdf_key` identifies its PDF attachment. A title is display-only and may be used for human sanity checks, never as the primary key.
 
@@ -69,8 +69,8 @@ Use exactly one mode for each request:
 
 | Observed state | Required action |
 | --- | --- |
-| Zotero, Note, Fulltext and Knowledge coverage are valid, and the Note conforms to the canonical template | `ALREADY_COMPLETE`; do not reprocess. |
-| Note and Fulltext are valid, but the Note does not conform to the canonical template | Run only the Analytical Note gate in template-repair mode; preserve the same Note path and identity, then revalidate. |
+| Zotero, Note, Fulltext and Knowledge coverage are valid, and the Note conforms to the current Note contract (structure + method quality) | `ALREADY_COMPLETE`; do not reprocess. |
+| Note and Fulltext are valid, but the Note does not meet the current contract | Legacy Note: run the Analytical Note gate in **method-section-repair** mode (keep contribution/results/judgment sections). New Note: run full template repair. Preserve path/identity, then revalidate. |
 | Note exists but Fulltext is missing/invalid | Run only the Fulltext gate, then reconsider Knowledge. |
 | Fulltext exists but Note is missing | Run only the Analytical Note gate. |
 | Note and Fulltext are valid but Knowledge has not considered the paper | Run only the Knowledge decision. |
@@ -83,9 +83,12 @@ Use exactly one mode for each request:
 - The Zotero fetcher must resolve `zotero_key` and `pdf_key`; do not use fuzzy title-based disk searches as acquisition.
 - For a needed new MinerU conversion, use the verified runner and the Fulltext Archiver instructions: an ASCII `input_<zotero_key>.pdf` working copy, matching source/working SHA-256, explicit `pipeline` backend in the current Windows CPU environment, one paper at a time, timestamped stdout/stderr, and scoped process cleanup. This documents `CURRENT_ENVIRONMENT_PIPELINE_PREFERRED`; it does not declare hybrid permanently unsupported.
 - Formal Fulltext is `03fulltext/<collection>/<zotero_key>.md`, with resolved image links and `MISSING_IMAGES = 0`. Preserve extracted body text; do not translate, summarize, polish, or Knowledge-ify it.
-- Analytical Note writing belongs solely to `zotero-analytical-writer` and represents single-paper structured understanding. For every new or explicitly normalized Note, use `{{VAULT_ROOT}}\模板\论文精读模板.md` as the structural authority; do not create a duplicate Note merely because an existing Note needs template repair.
-- When the user requires the template strictly, audit the existing Note before declaring `ALREADY_COMPLETE`. Preserve confirmed metadata, identity, links, formulas, and evidence, but reshape headings and conclusion blocks to the canonical template. Each conclusion must pair a finding with a source quotation; add PDF page numbers only after direct PDF verification or a reliable page mapping.
-- Knowledge writing belongs solely to `research-vault-knowledge-maintainer`. Before every Knowledge write, read `{{VAULT_ROOT}}\模板\知识库模板\README_知识库模板说明.md` and the matching `主题模板.md`, `概念模板.md`, `方法模板.md`, `关系模板.md`, or `争议模板.md`. Preserve the template's visible section order, tables, boundary sections, gaps, implications, and source tracking; do not substitute a short summary/source-list page. It must retain the frozen schema, Chinese-first human layer, claim sidecars, gap sidecars, and page-creation gate. Update an existing canonical page before considering a new page.
+- Analytical Note writing belongs solely to `zotero-analytical-writer` and represents single-paper structured understanding. For every new or explicitly normalized Note, use `{{VAULT_ROOT}}\模板\论文简读模板.md` as the structural authority; do not create a duplicate Note merely because an existing Note needs template repair.
+- Note quality gate: the method section must be mechanism-level (≥4,500 chars; 4,000 for a genuinely short paper), with ≥2 original formulas or an explicit “原文无公式”, training details, results/ablation/boundaries, ≥4 images or a documented original shortage, and grep-verified quotations. A module-name list or abstract paraphrase is `NOTE_QUALITY_FAILED`.
+- For an existing legacy Note, default to **method-section repair**: replace `## 方法` with `## 三、方法详解`, preserve the existing contribution/results/findings/judgment sections, add images, and correct verified facts. Do not force a full reformat merely because the Note predates the 简读 template. For a new Note, follow `论文简读模板.md`. Each key conclusion must pair with a grep-able source quotation; add PDF page numbers only after direct verification or a reliable page mapping.
+- For batch legacy-Note migration, follow `.opencode/skills/zotero-analytical-writer/references/note-migration-playbook.md`: scan all Notes first, classify `FULL` / `BORDER` / `PENDING`, read the Fulltext method/training/results/ablation/limitation sections, replace only the method section, then run a whole-Vault scan. A Note is not complete because it exists or has a `## 三、方法详解` heading.
+- After a batch, update `02vault/_index/文献索引.md` (`方法段` column: `FULL` / `BORDER` / `PENDING`), rebuild `02vault/_index/笔记重写状态.md`, and append the batch record to `01knowledge/log.md`. Do not let the index claim completeness while the method section is below the gate.
+- Knowledge writing belongs solely to `research-vault-knowledge-maintainer`. Before every Knowledge write, read `.opencode/skills/research-vault-knowledge-maintainer/references/knowledge-schema.md` and the matching `knowledge-theme-template.md`, `knowledge-concept-template.md`, `knowledge-method-template.md`, `knowledge-relation-template.md`, or `knowledge-controversy-template.md`. Preserve the template's visible section order, tables, boundary sections, gaps, implications, and source tracking; do not substitute a short summary/source-list page. It must retain the frozen schema, Chinese-first human layer, claim sidecars, gap sidecars, and page-creation gate. Update an existing canonical page before considering a new page.
 - When the user asks for a folder, collection, research direction, or all papers, the Knowledge gate must build a coverage ledger and route every in-scope paper to at least one real-path `source_notes` list and template evidence/source section. Report total papers, Fulltext-available papers, Note-only papers, and unresolved coverage before declaring success.
 - Workflow states are not Knowledge evidence enums and must never be inserted into frozen Knowledge schema fields.
 - The visible Knowledge log remains human-readable. Keep raw `zotero_key`/`pdf_key` in the orchestrator run record or linked Note/Fulltext identity chain, not in visible Knowledge prose or the human-facing log.
@@ -94,7 +97,7 @@ Use exactly one mode for each request:
 
 After all applicable validation succeeds, append one Chinese-format event to `01knowledge/log.md` through the Knowledge Maintainer workflow. Include date, human-readable source paper, Fulltext status, Analytical Note status, Knowledge action, updated pages/claims (if any), and validation result. Do not rewrite log history.
 
-Completion requires the final validator and the template/coverage audit to pass. A Note-template repair is complete only after Note↔Fulltext identity/path checks, image checks, and the Knowledge validator applicable to the observed state pass. If Fulltext is absent, report the accurate partial state (for example `FULLTEXT_DEFERRED`); do not claim `fulltext_verified` evidence.
+Completion requires the final validator and the template/coverage audit to pass. A Note-template repair is complete only after Note↔Fulltext identity/path checks, image checks, and the Knowledge validator applicable to the observed state pass. For a batch legacy-Note migration, completion additionally requires the whole-Vault method-quality scan, an up-to-date `02vault/_index/文献索引.md` `方法段` column and `02vault/_index/笔记重写状态.md`, and the batch record in `01knowledge/log.md`. If Fulltext is absent, report the accurate partial state (for example `FULLTEXT_DEFERRED`); do not claim `fulltext_verified` evidence.
 
 ## References
 

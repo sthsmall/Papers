@@ -2,7 +2,7 @@
 
 本项目集成了两套文献工作流，作为 opencode 项目级 skill：
 
-1. **Zotero 分析工作流**（`zotero-*` / `research-vault-*`）：Zotero 本地文献库 + MinerU 全文的精读与知识库管理。
+1. **Zotero 分析工作流**（`zotero-*` / `research-vault-*`）：Zotero 本地文献库 + MinerU 全文的简读/精读与知识页管理。
 2. **evil-read-arxiv 在线发现**（`start-my-day` 等）：arXiv / Semantic Scholar / DBLP 在线论文推荐与检索，作为互补补上"发现新论文"环节。
 
 覆盖：
@@ -10,8 +10,8 @@
 - 论文分类批处理与断点续跑
 - 论文元数据、批注、全文缓存提取
 - PDF/MinerU 全文归档与可追踪链接维护
-- 中文精读笔记生成与模板套用
-- 研究知识库的模板化维护与跨论文综合
+- 中文简读笔记生成、旧笔记方法段原位重写与配图
+- 知识主题页维护、证据地图与跨论文综合
 - ResearchVault 内的 Note-first 文献检索与原文核验
 - Zotero、Fulltext、精读笔记和 Knowledge 的端到端编排
 - arXiv 每日推荐、顶会检索、在线来源深度分析
@@ -37,14 +37,7 @@ Papers/
 │       └── zotero/          # 第三方 helper skill（提供 scripts/zotero.py）
 ├── vault-skeleton/          # 最小可用 Vault 骨架（01knowledge/02vault/03fulltext/99_System）
 ├── templates/
-│   ├── 论文精读模板.md
-│   └── 知识库模板/
-│       ├── README_知识库模板说明.md
-│       ├── 主题模板.md
-│       ├── 概念模板.md
-│       ├── 方法模板.md
-│       ├── 关系模板.md
-│       └── 争议模板.md
+│   └── 论文简读模板.md        # 唯一笔记模板；知识页模板在 knowledge-maintainer/references/
 └── evil-read-arxiv/         # juliye2025 的在线发现（按作者独立，vendor 整合）
     ├── skills/              # 5 个 skill，跟随上游仓库
     │   ├── start-my-day/
@@ -138,7 +131,7 @@ mineru -p <sample.pdf> -o <outdir> -b pipeline   # 跑通一篇小样本
 ### 没有 MinerU 时会发生什么
 
 - `zotero-fulltext-archiver` 停止 → 记录 `FULLTEXT_DEFERRED`，**不会伪造全文、不会写坏 `03fulltext/`**。
-- 其余环节可降级运行（Note-only）：Zotero 元数据/批注读取、基于**原始 PDF** 核验引文的中文精读笔记、知识页维护，以及在线发现（evil-read-arxiv）均不受影响。
+- 其余环节可降级运行（Note-only）：Zotero 元数据/批注读取、基于**原始 PDF** 核验引文的中文简读/精读笔记、知识页维护，以及在线发现（evil-read-arxiv）均不受影响。
 - 约束：无 Fulltext 时，任何结论**不得标记 `fulltext_verified`**。
 
 ## 工作流关系
@@ -148,9 +141,9 @@ mineru -p <sample.pdf> -o <outdir> -b pipeline   # 跑通一篇小样本
 1. `zotero-collection-manager`：读取某个 Zotero 分类、比对处理日志、筛出未完成文献并串行调度。
 2. `zotero-data-fetcher`：抓取单篇论文的元数据、批注、全文缓存和附件信息。
 3. `zotero-fulltext-archiver`：归档已处理的 PDF/MinerU 全文，整理图片和元数据，维护 Note 与 Fulltext 的双向关联。
-4. `zotero-analytical-writer`：中文逻辑重构、Frontmatter 提炼、模板套用和 Obsidian 笔记写入。
-5. `research-vault-ingest-orchestrator`：按单篇论文编排 Zotero 身份、Fulltext、精读笔记、Knowledge 决策和校验。
-6. `research-vault-knowledge-maintainer`：按知识库模板维护主题、概念、方法、关系、争议和综合页，执行跨论文覆盖与证据审查。
+4. `zotero-analytical-writer`：新笔记按简读模板创建；旧笔记只做 `## 三、方法详解` 原位重写（方法段质量门、配图、引文核验）。
+5. `research-vault-ingest-orchestrator`：按单篇论文编排 Zotero 身份、Fulltext、笔记、Knowledge 决策和校验。
+6. `research-vault-knowledge-maintainer`：维护 `knowledge-theme` 主题页、证据地图、条件性与研究空白，执行跨论文覆盖与证据审查。
 7. `research-vault-literature-retrieval`：处理 ResearchVault 文献问题时，先从 Analytical Notes 定位论文，再按需进入对应 Fulltext 或 Zotero PDF 核验。
 
 ## 在线发现（evil-read-arxiv）
@@ -225,8 +218,7 @@ data-fetcher → fulltext-archiver → analytical-writer → knowledge-maintaine
 │   └── Config/
 │       └── research_interests.yaml   # 研究兴趣配置
 ├── 模板/
-│   ├── 论文精读模板.md
-│   └── 知识库模板/
+│   └── 论文简读模板.md
 ├── tools/
 └── note/
 ```
@@ -244,7 +236,8 @@ data-fetcher → fulltext-archiver → analytical-writer → knowledge-maintaine
 ## 使用建议
 
 - 这些 skill 由 opencode 从 `.opencode/skills/` 与 `evil-read-arxiv/skills/` 两个目录加载（见 `opencode.json` 的 `skills.paths`）。
-- `zotero-analytical-writer` 使用 `{{VAULT_ROOT}}\模板\论文精读模板.md`；知识库维护 skill 使用 `{{VAULT_ROOT}}\模板\知识库模板`。
+- `zotero-analytical-writer` 使用 `{{VAULT_ROOT}}\模板\论文简读模板.md`；知识页维护 skill 使用 `.opencode/skills/research-vault-knowledge-maintainer/references/` 下的模板与 schema。
+- 批量笔记迁移按 `zotero-analytical-writer/references/note-migration-playbook.md` 执行；验收用 `zotero-analytical-writer/scripts/scan_note_quality.py`，并同步 `02vault/_index` 的方法段列与状态页。
 - 先启动发现层（`start-my-day` / `conf-papers`）看每日/顶会论文，再对值得精读的走统一合并工作流。
 
 ## 后续可继续补充
@@ -262,7 +255,7 @@ data-fetcher → fulltext-archiver → analytical-writer → knowledge-maintaine
 | MinerU 本体 | **需自行安装** | 见上文「MinerU 安装与模型下载」。skill 检测到缺失时会**先询问用户是否安装**，未获明确同意前不执行任何安装/下载；拒绝则转 `FULLTEXT_DEFERRED` |
 | Zotero 访问层 | 已附带 | `.opencode/skills/zotero/scripts/zotero.py`（仅 Python 标准库依赖）；`zotero-*` skill 本身只要求能访问 Zotero 本地 API + Connector，可自行替换实现 |
 | Vault 目录骨架 | 已附带 | `vault-skeleton/`（含 `01knowledge/index.md`、`log.md`、`.meta/`、`02vault/_index/文献索引.md` 等初版） |
-| 写作模板 | 已附带 | `templates/`（论文精读模板 v2 + 知识库模板） |
+| 写作模板 | 已附带 | `templates/`（`论文简读模板.md`）；知识页模板在 `knowledge-maintainer/references/` |
 | MinerU 批量脚本 | **需自备** | 如 `{{RESEARCH_DIR}}\mineru_batch_runner.py`、`{{VAULT_ROOT}}\tools\run_mineru_production.py`；缺失时直接按 `AGENTS.md` 调用 MinerU CLI |
 | 链接一致性校验脚本 | **需自备** | 如 `{{RESEARCH_DIR}}\zotero_batch\validate_research_vault_literature_links.py`；缺失时按 skill 内检查项人工核对 |
 | Knowledge 校验器 | **需自备** | `research-vault-knowledge-maintainer/scripts/validate_research_vault_knowledge.py` 未随仓库发布；缺失时按 `validation-contract.md` 检查项人工核对 |

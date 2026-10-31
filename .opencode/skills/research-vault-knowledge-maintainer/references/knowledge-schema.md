@@ -11,7 +11,7 @@ The only supported `type` values are `knowledge-theme`, `knowledge-concept`, `kn
 Every page has: `type`, `title`, `aliases`, `status`, `evidence_count`, `source_notes`, `related`, `last_updated`, and `evidence_status`.
 
 - `evidence_count` is a distinct-source coverage count, never a count of support for every claim.
-- `source_notes` contains only `[[REAL_ANALYTICAL_NOTE_PATH|HUMAN_READABLE_SHORT_NAME]]` links.
+- `source_notes` lists vault-relative Analytical Note paths (for example `02vault/MOT/<title>.md`), one per distinct source; prose uses `[[...]]` wikilinks with readable aliases. Do not store raw Zotero keys here. All current `01knowledge` pages use this path form.
 - `related` contains Knowledge navigation links, not paper evidence.
 - `evidence_status` is the page-level summary: `fulltext_verified`, `note_only`, or `mixed`.
 
@@ -56,6 +56,8 @@ Store each gap in `01knowledge/.meta/gaps/` and its index; do not embed a marker
 ```
 
 An `evidence-backed` gap explicitly says it is limited to current Vault coverage. An `interpretive` opportunity visibly labels itself `interpretation`; it is a research direction, not a claim that the entire field lacks work.
+
+**Current Vault practice (2026-10):** the existing `01knowledge` pages are all `knowledge-theme` pages and keep their gaps inline under `## 6. 当前研究空白`; `.meta/gaps` sidecars are optional unless the Knowledge validator or acceptance suite is enabled. Relation, controversy, and synthesis pages still require the claim/gap records defined above. Do not create sidecars merely to satisfy a template when the page is a theme page maintained in the inline style.
 
 ## Source identity and metadata
 

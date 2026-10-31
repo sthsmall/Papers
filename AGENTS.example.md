@@ -20,7 +20,9 @@
 - **未检测到 MinerU 时的硬性约定**：先搜索既有 MinerU（可执行文件 / CLI / Python 模块 / 历史输出），**不要重复安装**。若确认确实没有可用 MinerU，**必须停下并询问用户"是否安装 MinerU"**，并指向 `README.md` 的「MinerU 安装与模型下载」。**未获用户明确同意前，不得执行任何安装或下载**（不得 `pip install`、不得下载模型/便携版）。用户拒绝或环境不满足时，转 `FULLTEXT_DEFERRED`（Note-only 降级），**不得静默跳过或伪造全文**。
   - **只问一次**：该询问**仅在首次确认缺失时发生一次**；一旦 MinerU 已确认可用（或用户已授权/已安装），后续任务直接使用，不再重复询问。每次任务开始时只做一次轻量存在性探测即可。
 - **MinerU 精度选择**：有 NVIDIA GPU 时优先 `-b hybrid-engine --effort high`（需另设 `CUDA_PATH=<MinerU根>\cuda`）；文本型 PDF 若字符/连字符识别不佳（字体编码问题），改用 `-m ocr` 强制 OCR。归档 fulltext 的 frontmatter `source_type` 记录实际后端（如 `mineru`、`mineru-hybrid`、`mineru-ocr`）。
-- **Vault 模板**：`templates/` 下的模板首次使用需复制到 `{{VAULT_ROOT}}\模板\`（含 `论文精读模板.md` 和 `知识库模板\`）。skill 依赖此路径。
+- **Vault 模板**：`templates/` 下的 `论文简读模板.md` 首次使用需复制到 `{{VAULT_ROOT}}\模板\`。知识页模板与 schema 位于 `.opencode/skills/research-vault-knowledge-maintainer/references/`，不再放到 Vault 模板目录。
+- **简读笔记质量门**：新笔记按 `论文简读模板.md` 创建；旧笔记只做 `## 三、方法详解` 原位重写，保留贡献/结果/判断章节。方法段 ≥4,500 字符（短论文 ≥4,000）；有公式的论文 ≥2 个原文公式，无公式则注明；训练细节、结果/消融/边界齐全；≥4 图或注明原文不足；引文用 Fulltext grep 命中并标注页码状态。
+- **笔记迁移习惯**：批量迁移按 `.opencode/skills/zotero-analytical-writer/references/note-migration-playbook.md` 执行；验收用 `.opencode/skills/zotero-analytical-writer/scripts/scan_note_quality.py`，并同步 `02vault/_index/文献索引.md` 的 `方法段` 列与 `02vault/_index/笔记重写状态.md`。批次报告不能替代独立扫描。
 - 涉及文献检索/精读/知识库任务时，优先加载对应的 `research-vault-*` 与 `zotero-*` skill（位于 `.opencode/skills/`），遵循其流程与证据规则。
 - **Zotero 数据读写**：走 Zotero Desktop 本地 API（默认端口 `23119`，只读）+ Connector（写入走 `import-bibtex` / `import-ris`）；不依赖 MCP。若本地 API 被锁，可用 SQLite 以只读模式（`?immutable=1`）直读。备用 Web API 需要你自己的 API Key，请通过环境变量提供，**不要写进仓库**。
   - 可选 helper：`.opencode/skills/zotero/scripts/zotero.py`（仅 Python 标准库依赖）。`zotero-*` skill 本身只要求能访问上述本地 API + Connector，可自行替换实现。

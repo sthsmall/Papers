@@ -8,6 +8,8 @@ These states describe process progress only. They do not replace evidence roles,
 | `FULLTEXT_CREATED` | Formal Fulltext was newly archived and passed its gate | Continue to Note/pair checks |
 | `NOTE_CREATED` | Formal Analytical Note was newly created | Continue to pair/Knowledge checks |
 | `NOTE_TEMPLATE_REPAIRED` | Existing Analytical Note was normalized to the canonical template without changing its stable identity | Continue to pair/Knowledge checks |
+| `NOTE_METHOD_REPAIRED` | Existing legacy Note had only `## 三、方法详解` rewritten (contributions/results/judgment preserved) | Continue to pair/Knowledge checks |
+| `NOTE_QUALITY_FAILED` | Note exists but fails the method-section/image/quote quality gate | Return to Analytical Writer for targeted repair |
 | `KNOWLEDGE_UPDATED` | Existing or gated-new Knowledge was conservatively updated and validated | Final log |
 | `NO_KNOWLEDGE_CHANGE` | Paper is complete but adds no durable Knowledge change | Final log; success |
 | `FULLTEXT_DEFERRED` | PDF/runner condition prevents Fulltext now | Retain accurate partial evidence state |

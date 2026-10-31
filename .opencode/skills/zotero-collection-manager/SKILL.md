@@ -29,9 +29,13 @@ Process Log
 - 先读取现有日志；成功条目只在所有核心条件满足时跳过。
 - 默认只处理用户指定的 Collection、单篇或小批量；不得自动批量重跑全库、迁移所有旧笔记或移动 Zotero PDF。
 - 已有 analytical note 但没有全文时，只补 Fulltext 与链接，不重新生成整篇笔记。
-- 当批次请求包含 Knowledge 整理或“全部论文”时，批次调度必须先读取 `{{VAULT_ROOT}}\模板\知识库模板\README_知识库模板说明.md` 和对应的主题/概念/方法/关系/争议模板，并建立逐篇 coverage ledger；不能以“已有笔记”或“已生成综合页”代替 Knowledge 覆盖。
+- **Note 存在不等于完成**：需通过方法段质量门（≥4,500 字符、≥2 个原文公式或明确“原文无公式”、训练细节齐全、≥4 图或注明原文不足、引文可 grep）。未通过时记 `NOTE_QUALITY_FAILED`，回到 Analytical Writer 做方法段修复，而不是以“已有笔记”跳过。
+- **批量前先盘点**：扫描目标 Collection 的分析笔记，按方法段字符数分为 `FULL`（≥4,500）/ `BORDER`（4,000–4,500）/ `PENDING`（<4,000）；不要按“有笔记”直接开跑。
+- **批量按 playbook 执行**：读 `.opencode/skills/zotero-analytical-writer/references/note-migration-playbook.md`；逐篇读 Fulltext 的方法/训练/结果/消融/局限，只替换方法段，保留其他章节。
+- **批量后收口**：先跑 `.opencode/skills/zotero-analytical-writer/scripts/scan_note_quality.py --vault "{{VAULT_ROOT}}"`（exit 1 为硬失败），再更新 `02vault/_index/文献索引.md` 的 `方法段` 列，重建 `02vault/_index/笔记重写状态.md`，追加 `01knowledge/log.md`；未跑全库扫描不得报 `COMPLETE`。
+- 当批次请求包含 Knowledge 整理或“全部论文”时，批次调度必须先读取 `.opencode/skills/research-vault-knowledge-maintainer/references/knowledge-schema.md` 和对应的 `knowledge-theme-template.md` / `knowledge-concept-template.md` / `knowledge-method-template.md` / `knowledge-relation-template.md` / `knowledge-controversy-template.md`，并建立逐篇 coverage ledger；不能以“已有笔记”或“已生成综合页”代替 Knowledge 覆盖。
 - Knowledge 写作必须同时解析 Analytical Note 的结构化字段和对应 `{{VAULT_ROOT}}\03fulltext` 原文。Fulltext 可用时，精确结论、公式、阈值、机制和引语必须回到原文核验；Fulltext 缺失时只能保留 `note_supported` / `FULLTEXT_DEFERRED`，不得补写页码或反向生成引语。
-- 批次完成条件包括：每篇论文至少进入一个真实 `source_notes`，页面使用当前知识库模板的完整可见章节，覆盖账本无未解释遗漏，且 Knowledge validator 与模板审查均通过。
+- 批次完成条件包括：每篇论文至少进入一个真实 `source_notes`，页面使用当前 Knowledge schema 与 references 模板的完整可见章节，覆盖账本无未解释遗漏，且 Knowledge validator 与模板审查均通过。
 - `MinerU_batch` 只作为可复用历史来源；发现标题对应多个 Item Key 时暂停该条目并报告冲突。
 - `⚠️ 跳过` 不是永久完成。只有用户明确确认永久忽略才可终止；临时错误必须可重试。
 
@@ -46,6 +50,7 @@ Process Log
   "fulltext": true,
   "images_valid": true,
   "note": true,
+  "note_quality": true,
   "linked": true,
   "page_mapping": "unknown",
   "indexes_refreshed": false
@@ -54,11 +59,12 @@ Process Log
 
 核心状态：
 
-- `COMPLETE`：`pdf_found && fulltext && images_valid && note && linked` 全部为真。
+- `COMPLETE`：`pdf_found && fulltext && images_valid && note && note_quality && linked` 全部为真。
 - `PARTIAL_FULLTEXT_MISSING`：Note 存在但 Fulltext 未建立。
 - `PARTIAL_NOTE_MISSING`：Fulltext 存在但 Note 未建立。
 - `IMAGES_INVALID`：全文存在但有图片缺失或错误引用。
 - `PDF_NOT_FOUND`：找不到父条目 PDF，可重试。
+- `NOTE_QUALITY_FAILED`：笔记存在但方法段/配图/引文未达当前质量门，可修复。
 - `MINERU_FAILED`：MinerU 失败，可重试。
 - `KEY_CONFLICT`：主键或标题映射冲突，需要人工确认。
 - `PERMANENTLY_IGNORED`：仅用户明确确认后使用。
