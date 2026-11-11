@@ -18,7 +18,7 @@ Current production layout:
 - Formal Fulltext: `{{VAULT_ROOT}}\03fulltext`
 - Knowledge machine metadata: `{{VAULT_ROOT}}\01knowledge\.meta`
 - Knowledge page templates: `.opencode/skills/research-vault-knowledge-maintainer/references/`
-- MinerU production runner（可选，需自备；本仓库不附带）: `{{VAULT_ROOT}}\tools\run_mineru_production.py` —— 缺失时直接按 `AGENTS.md` 调用 MinerU CLI
+- MinerU production runner: `.opencode/skills/zotero-fulltext-archiver/scripts/mineru_parse.ps1`（4.1.5 `--tier standard --format zip`；带 free-VRAM 守卫，3.4.0 仅作 fallback）
 - Canonical Analytical Note template: `{{VAULT_ROOT}}\模板\论文简读模板.md`
 
 The stable identity is `zotero_key` (parent item); `pdf_key` identifies its PDF attachment. A title is display-only and may be used for human sanity checks, never as the primary key.
@@ -81,7 +81,7 @@ Use exactly one mode for each request:
 ## Production rules
 
 - The Zotero fetcher must resolve `zotero_key` and `pdf_key`; do not use fuzzy title-based disk searches as acquisition.
-- For a needed new MinerU conversion, use the verified runner and the Fulltext Archiver instructions: an ASCII `input_<zotero_key>.pdf` working copy, matching source/working SHA-256, explicit `pipeline` backend in the current Windows CPU environment, one paper at a time, timestamped stdout/stderr, and scoped process cleanup. This documents `CURRENT_ENVIRONMENT_PIPELINE_PREFERRED`; it does not declare hybrid permanently unsupported.
+- For a needed new MinerU conversion, use the Fulltext Archiver wrapper `scripts/mineru_parse.ps1` (MinerU 4.1.5, `--tier standard`, `--format zip`) with an ASCII `input_<zotero_key>.pdf` working copy, matching source/working SHA-256, one paper at a time, and timestamped stdout/stderr. The wrapper must keep its `nvidia-smi` free-VRAM guard (below 12 GB → exit 75). Use the 3.4.0 `hybrid-engine` fallback only when 4.1.5 fails or figure-internal text/appendix qualitative images are required, and then apply the old scoped `mineru.cli.fast_api` cleanup rule.
 - Formal Fulltext is `03fulltext/<collection>/<zotero_key>.md`, with resolved image links and `MISSING_IMAGES = 0`. Preserve extracted body text; do not translate, summarize, polish, or Knowledge-ify it.
 - Analytical Note writing belongs solely to `zotero-analytical-writer` and represents single-paper structured understanding. For every new or explicitly normalized Note, use `{{VAULT_ROOT}}\模板\论文简读模板.md` as the structural authority; do not create a duplicate Note merely because an existing Note needs template repair.
 - Note quality gate: the method section must be mechanism-level (≥4,500 chars; 4,000 for a genuinely short paper), with ≥2 original formulas or an explicit “原文无公式”, training details, results/ablation/boundaries, ≥4 images or a documented original shortage, and grep-verified quotations. A module-name list or abstract paraphrase is `NOTE_QUALITY_FAILED`.

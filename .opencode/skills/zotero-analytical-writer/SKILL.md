@@ -125,7 +125,7 @@ description: "使用 Zotero metadata、批注和 MinerU Fulltext，按 {{VAULT_R
 ## 4. 引文与证据
 
 - 每条关键结论尽量配一条**能在 Fulltext 中 grep 到**的原文引用；引文必须逐字，不用中文摘要反向生成英文 quote。
-- 页码只有在 Original PDF 或可靠 page mapping 核验后才写“PDF 第 n 页”；否则写“PDF 页码未验证”。
+- 页码只有在 Original PDF，或 fulltext frontmatter `page_mapping` 指向的 `page_maps/<zotero_key>.json`（4.1.5 `page_idx` + bbox）核验后才写“PDF 第 n 页”；否则写“PDF 页码未验证”。
 - OCR 连写/拼写差异（如 `parametereficient`、`oneto-one`、`oficial`）按全文原样转录，并注明“原文 OCR 将 X 连写/拼作 Y”。
 - 公式排版引用若无法逐字 grep，标注“公式排版，此处转写/省略”，不要冒充逐字引文。
 - 区分：作者报告的事实、作者的解释、我们的推断。`引文核验` 节列出已核验的引文与页码状态。

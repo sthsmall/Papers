@@ -5,25 +5,33 @@ description: "将已有 Zotero PDF 或历史 MinerU 输出归档为可追踪的 
 
 # Zotero Fulltext Archiver
 
-## Batch 6D production safeguards (Windows CPU / MinerU 3.x)
+## MinerU 4.1.5 primary / 3.4.0 fallback (Windows GPU)
 
-When a validated Zotero PDF must be run through MinerU on the current Windows
-CPU environment, use an ASCII-only *working copy* in a scoped temporary run
-directory. The Zotero attachment remains read-only. Record the source and
-working-copy SHA-256 values and do not invoke MinerU until they match.
+Default: run the wrapper
+`.opencode/skills/zotero-fulltext-archiver/scripts/mineru_parse.ps1`
+with `-Tier standard`. It uses MinerU 4.1.5 (`mineru-kit parse --format zip`)
+and checks `nvidia-smi` free VRAM first: below **12 GB** it exits with code
+**75** without touching the GPU. Do not bypass the guard unless the user
+explicitly asks; the GPU is shared with the user's experiments.
 
-Use the explicitly validated `pipeline` backend for this environment. This is
-an environment-specific fallback, not a general claim that the hybrid backend
-is unsuitable. Give a complete article a hard limit of at least 60 minutes.
-A no-progress stop may be used only after 10--15 minutes during which stdout,
-stderr, output files, and process CPU time have all remained inactive. Abort
-for persistently available RAM below 2 GB only after a sustained observation,
-and record the resource samples.
+Use an ASCII-only *working copy* in a scoped temporary run directory. The
+Zotero attachment remains read-only. Record the source and working-copy
+SHA-256 values and do not invoke MinerU until they match. Give a complete
+article a hard limit of at least 30 minutes (4.1.5 is usually much faster);
+a no-progress stop may be used only after 10--15 minutes during which stdout,
+stderr, output files, and process CPU time have all remained inactive.
 
-Every invocation must stream timestamped stdout and stderr to the run
-directory, record stage transitions, and clean only the MinerU CLI tree and
-new `mineru.cli.fast_api` descendants created by that invocation. Recheck for
-those exact processes after cleanup; never terminate unrelated Python work.
+4.1.5 writes a zip containing `markdown.md`, `middle_json.json`,
+`structured_content.json`, and `images/`. Archive the Markdown body verbatim;
+only frontmatter, safe image paths, and page-map references may be changed.
+
+Use the 3.4.0 fallback (`-Fallback340`, or the old `mineru.cli.client
+-b hybrid-engine --effort high` command) only when 4.1.5 fails, or when
+figure-internal text / appendix qualitative images are required. The old
+`mineru.cli.fast_api` cleanup rule applies only to that fallback: stream
+timestamped stdout/stderr, record stage transitions, and stop only the exact
+MinerU CLI tree created by that invocation; never terminate unrelated Python
+work.
 
 Archive only after the raw Markdown gate passes: non-empty full-document
 front/middle/end samples, source identity, image-file/reference checks, and
@@ -34,8 +42,10 @@ Before invoking MinerU, inspect the formal `03fulltext` path by `zotero_key`.
 If a formal Fulltext already has matching `zotero_key`/`pdf_key`, valid
 frontmatter, resolved images, and a non-empty article body, reuse it and run
 targeted validation. A Note-template repair is not a reason to rerun MinerU.
-If `page_mapping` is `unknown`, retain that value; the Analytical Writer may
-still verify quotation pages directly against the read-only Original PDF.
+If `page_mapping` is `unknown` and a 4.1.5 `structured_content.json` exists,
+build `page_maps/<zotero_key>.json` and verify 2--3 quotes; otherwise retain
+`unknown`. The Analytical Writer may still verify quotation pages directly
+against the read-only Original PDF.
 
 ## 职责边界
 
@@ -62,9 +72,11 @@ still verify quotation pages directly against the read-only Original PDF.
 >
 > **不适用场景**：若用户已授权安装、或已有可用 MinerU（含历史输出可直接复用），则无需询问，直接按第 2、3 节处理。
 
-当前已发现的可复用调用链是（**可选：批量脚本需自备，本仓库不附带**；若脚本缺失，改为直接按 `AGENTS.md` 调用 MinerU CLI）：
+当前默认调用链：
 
-`{{RESEARCH_DIR}}\mineru_batch_runner.py` → `{{MINERU_EXE}}` → 系统临时输出目录 → `{{ARCHIVE_ROOT}}\mineru-staging\`。批量输出只能作为外部暂存；逐篇补齐 frontmatter、图片路径和 Note 关联并验证后，才复制到 `{{VAULT_ROOT}}\03fulltext\<collection>\`。
+`scripts/mineru_parse.ps1`（MinerU 4.1.5，`--tier standard --format zip`）→ 系统临时输出目录 → 解压/整理 → `{{VAULT_ROOT}}\03fulltext\<collection>\`。批量输出只能作为外部暂存；逐篇补齐 frontmatter、图片路径和 Note 关联并验证后，才复制。
+
+3.4.0 fallback 仍可用 `{{MINERU340_ROOT}}\WPy64-312101\python\python.exe -m mineru.cli.client -b hybrid-engine --effort high`，但只用于 4.1.5 失败或需要图内文字/附录定性图的场景。
 
 历史 `MinerU_test` 的页码辅助文件已归档到 `{{ARCHIVE_ROOT}}\2026-08-10\MinerU_test\`；如需核验历史页码映射可定向读取，但不足以证明所有论文都可可靠映射。
 
@@ -89,7 +101,7 @@ still verify quotation pages directly against the read-only Original PDF.
 4. 将原有图片引用改为相对于 Fulltext Markdown 的安全路径，例如 `![](<images/Q22PFLNV/image.jpg>)`。
 5. 逐一检查每个本地图片引用真实存在；有缺失时不能报告成功。
 
-若没有可复用结果，才调用已确认的 MinerU 可执行文件处理单篇 PDF；不得批量重跑整个库。
+若没有可复用结果，才用 `scripts/mineru_parse.ps1`（4.1.5）处理单篇 PDF；不得批量重跑整个库。仅当 4.1.5 失败、或确需图内文字/附录定性图时，才加 `-Fallback340` 调 3.4.0。
 
 ## 4. Fulltext Frontmatter
 
@@ -107,8 +119,8 @@ note_path: "论文库/创新经济地理/论文标题.md"
 fulltext_path: "03fulltext/创新经济地理/Q22PFLNV.md"
 zotero_item: "zotero://select/library/items/Q22PFLNV"
 zotero_pdf: "zotero://open-pdf/library/items/4RMSR7ZR"
-source_type: mineru
-page_mapping: unknown
+source_type: mineru-4.1.5
+page_mapping: "page_maps/Q22PFLNV.json"
 ---
 ```
 
@@ -118,8 +130,19 @@ Vault 内部路径统一使用 `/`。缺失的 DOI 可留空，但不得伪造�
 
 - MinerU Markdown 是证据档案：不翻译、总结、润色、重写、删减或插入模型生成内容。
 - 允许的后处理仅包括 frontmatter、机器定位标记和安全图片路径修复。
-- 只有当 `content_list.json`/`middle.json` 等信息与真实 PDF 通过单篇测试可靠对应时，才写 `page_mapping: reliable` 或 `<!-- pdf_page: N -->`。
+- **4.1.5**：`structured_content.json` 的 `pages[].page_idx` 是 0-based，`page_number = page_idx + 1`，block bbox 为归一化坐标。用 `scripts/build_page_map.py` 生成 `page_maps/<zotero_key>.json`，再写 `page_mapping: "page_maps/<zotero_key>.json"`；先用 2--3 个 quote 对照真实 PDF 验证。
+- **3.4.0 fallback**：只有当 `content_list.json`/`middle.json` 与真实 PDF 通过单篇测试可靠对应时，才写 `page_mapping: reliable` 或 `<!-- pdf_page: N -->`。
 - 0-based/1-based 转换必须记录并用真实 PDF 验证；无法可靠映射时写 `page_mapping: unknown`，不要猜 page。
+
+生成 4.1.5 页图并回填 frontmatter：
+
+```powershell
+python ".opencode\skills\zotero-fulltext-archiver\scripts\build_page_map.py" `
+  --structured "<MinerU输出>\structured_content.json" `
+  --out "{{VAULT_ROOT}}\03fulltext\<collection>\page_maps\<zotero_key>.json" `
+  --fulltext "{{VAULT_ROOT}}\03fulltext\<collection>\<zotero_key>.md" `
+  --update-frontmatter
+```
 
 ## 6. 关联与校验
 

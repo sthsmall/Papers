@@ -85,48 +85,74 @@ MinerU 是全文归档层（`zotero-fulltext-archiver`）的唯一硬依赖。**
 
 ```bash
 pip install --upgrade pip
-pip install -U "mineru[all]"                 # 或：uv pip install -U "mineru[all]"
+pip install -U "mineru[full]"                # 或：uv pip install -U "mineru[full]"
 
-# 国内网络：把模型源切到 modelscope（否则首次运行会去 HuggingFace 拉模型）
-export MINERU_MODEL_SOURCE=modelscope        # PowerShell: $env:MINERU_MODEL_SOURCE="modelscope"
+# 国内网络：优先 HF 镜像；ModelScope 也可用但实测更慢
+export HF_ENDPOINT=https://hf-mirror.com     # PowerShell: $env:HF_ENDPOINT="https://hf-mirror.com"
 
-# 首次运行会自动下载模型；也可显式下载到本地
-mineru-models-download
+# 下载 standard 档所需的小模型 + VLM（mineru-kit 随 mineru 包安装）
+mineru-kit models download --tier standard --small-backend torch --vlm-engine lmdeploy --source huggingface
+mineru-kit models verify --tier standard --small-backend torch --vlm-engine lmdeploy
 ```
 
-### 方式 B：Windows 绿色便携版（免安装，本项目作者使用）
+### 方式 B：MinerU 4.1.5（推荐，GPU）+ 3.4.0 便携版（fallback）
 
-下载便携包后解压到任意目录，调用前设置环境变量（以 `<MinerU根>` 为例）：
+4.1.5 用独立 venv，不覆盖旧版；模型默认放在 `MINERU_HOME\models`：
 
 ```powershell
-$env:PYTHONPATH      = "<MinerU根>\src"
-$env:HF_HOME         = "<MinerU根>\models"
+$env:MINERU_HOME = "<MinerU415根>\home"
+$env:MINERU_MODEL_SOURCE = "local"
+& "<MinerU415根>\venv\Scripts\mineru-kit.exe" parse `
+    "<论文.pdf>" -o "<输出目录>" --tier standard --format zip
+```
+
+或直接用带显存检查的包装脚本（free < 12 GB 时 exit 75，不抢 GPU）：
+
+```powershell
+& ".opencode\skills\zotero-fulltext-archiver\scripts\mineru_parse.ps1" `
+    -Pdf "<论文.pdf>" -Out "<输出目录>" -Tier standard
+```
+
+输出 zip 包含 `markdown.md`、`middle_json.json`、`structured_content.json`、`images/`。`structured_content.json` 每个 block 带 `page_idx` 与归一化 bbox，可用 `.opencode\skills\zotero-fulltext-archiver\scripts\build_page_map.py` 生成 `page_map.json`。
+
+3.4.0 便携版保留作 fallback（仅当 4.1.5 失败，或需要图内文字/附录定性图时）：
+
+```powershell
+$env:PYTHONPATH      = "<MinerU340根>\src"
+$env:HF_HOME         = "<MinerU340根>\models"
 $env:HF_HUB_OFFLINE  = "1"
 $env:MINERU_MODEL_SOURCE = "modelscope"
 $env:PYTHONUTF8      = "1"
-# 有 NVIDIA GPU 时（hybrid 后端）另设：
-$env:CUDA_PATH       = "<MinerU根>\cuda"
+$env:CUDA_PATH       = "<MinerU340根>\cuda"
 
-& "<MinerU根>\WPy64-312101\python\python.exe" -m mineru.cli.client `
+& "<MinerU340根>\WPy64-312101\python\python.exe" -m mineru.cli.client `
     -p "<论文.pdf>" -o "<输出目录>" -b hybrid-engine --effort high
 ```
 
-> 便携版没有 `mineru.exe` 时，用上面的 `python -m mineru.cli.client` 调用式；`{{MINERU_EXE}}` 指向的即该调用入口。
+重下 4.1.5 模型时优先 HF 镜像（实测约 3.8 MB/s，ModelScope 约 1.6 MB/s）：
+
+```powershell
+$env:HF_ENDPOINT = "https://hf-mirror.com"
+& "<MinerU415根>\venv\Scripts\mineru-kit.exe" models download `
+    --tier standard --small-backend torch --vlm-engine lmdeploy --source huggingface
+```
 
 ### 校验安装
 
 ```bash
-mineru --version          # pip 安装
-mineru -p <sample.pdf> -o <outdir> -b pipeline   # 跑通一篇小样本
+mineru-kit --version
+mineru-kit models verify --tier standard --small-backend torch --vlm-engine lmdeploy
 ```
 
 ### 后端选择建议
 
 | 场景 | 推荐 |
 | --- | --- |
-| 有 NVIDIA GPU，追求最高精度 | `-b hybrid-engine --effort high`（需 `CUDA_PATH`） |
-| Windows CPU / 无 GPU | `-b pipeline`（本项目历史验证的后端） |
-| 文本型 PDF 字符/连字符识别差（字体编码问题） | `-m ocr` 强制 OCR |
+| 默认（有 NVIDIA GPU） | 4.1.5 `--tier standard` |
+| 更高精度、可接受更慢 | 4.1.5 `--tier advanced`（同一套权重，增加推理投入） |
+| 需要图内文字 / 附录定性图 | 3.4.0 `-b hybrid-engine --effort high` |
+| 文本型 PDF 字符/连字符识别差（字体编码问题） | 3.4.0 `-m ocr` 强制 OCR |
+| 无 GPU / 低显存 | 4.1.5 `--tier basic`（仅小模型），或 3.4.0 `-b pipeline` |
 
 ### 没有 MinerU 时会发生什么
 
@@ -200,7 +226,12 @@ data-fetcher → fulltext-archiver → analytical-writer → knowledge-maintaine
 | `{{VAULT_ROOT}}` | ResearchVault 根目录（含 `01knowledge`、`02vault`、`03fulltext`、`模板\`、`tools\`） |
 | `{{ARCHIVE_ROOT}}` | 历史 MinerU 归档目录（可为空） |
 | `{{RESEARCH_DIR}}` | 研究工具与论文 PDF 目录（如 `<RESEARCH_DIR>\papers\`） |
-| `{{MINERU_EXE}}` | MinerU 可执行文件路径 |
+| `{{MINERU_EXE}}` | MinerU 3.4.0 legacy 可执行文件路径（fallback） |
+| `{{MINERU340_ROOT}}` | MinerU 3.4.0 绿色便携版根目录（fallback） |
+| `{{MINERU415_HOME}}` | MinerU 4.1.5 的 `MINERU_HOME`（含 `config.yaml`、`models/`） |
+| `{{MINERU415_VENV}}` | MinerU 4.1.5 venv |
+| `{{MINERU415_KIT}}` | `{{MINERU415_VENV}}\Scripts\mineru-kit.exe` |
+| `{{MINERU_PARSE_PS1}}` | `.opencode/skills/zotero-fulltext-archiver/scripts/mineru_parse.ps1` |
 
 ### 推荐的 Vault 布局（对应占位符）
 
@@ -211,6 +242,8 @@ data-fetcher → fulltext-archiver → analytical-writer → knowledge-maintaine
 ├── 02vault/
 │   └── _index/
 ├── 03fulltext/
+│   └── <collection>/
+│       └── page_maps/        # 4.1.5 page_idx + bbox（可选）
 ├── 10_Daily/                # evil-read-arxiv 每日/年度推荐笔记
 ├── 20_Research/
 │   └── Papers/              # evil-read-arxiv 在线分析笔记

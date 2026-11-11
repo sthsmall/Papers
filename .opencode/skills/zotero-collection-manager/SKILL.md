@@ -52,10 +52,12 @@ Process Log
   "note": true,
   "note_quality": true,
   "linked": true,
-  "page_mapping": "unknown",
+  "page_mapping": "page_maps/Q22PFLNV.json",
   "indexes_refreshed": false
 }
 ```
+
+`page_mapping` 取值：`unknown`、`reliable`（3.4.0 且已核验），或相对路径 `page_maps/<zotero_key>.json`（4.1.5 的 `structured_content.json` 生成）。
 
 核心状态：
 
