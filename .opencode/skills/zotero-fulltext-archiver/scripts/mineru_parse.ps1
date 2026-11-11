@@ -1,4 +1,3 @@
-#requires -Version 7.0
 <#
 .SYNOPSIS
   Parse one PDF with MinerU 4.1.5, with a GPU-free guard and an optional 3.4.0 fallback.
