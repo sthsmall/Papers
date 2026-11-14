@@ -3,7 +3,7 @@
 | Gate | Pass condition | On failure | Downstream effect |
 | --- | --- | --- | --- |
 | State inspection | Existing artifacts and coverage are classified by stable identity | `VALIDATION_FAILED` or `MANUAL_REVIEW_REQUIRED` | Do not choose a write action |
-| Identity | One parent `zotero_key`; attached PDF has one `pdf_key` and real path when Fulltext is required | `PDF_NOT_FOUND` or `KEY_CONFLICT` | No MinerU, Note or Knowledge claim creation |
+| Identity | One `paper_id` in `papers.tsv`; one real local `pdf_path` when Fulltext is required; legacy `zotero_key` optional | `PDF_NOT_FOUND` or `KEY_CONFLICT` | No MinerU, Note or Knowledge claim creation |
 | Fulltext | Valid formal Markdown, matching identifiers, images resolved; or an explicitly allowed deferred state | `FULLTEXT_FAILED` / `FULLTEXT_DEFERRED` | Do not call anything fulltext-verified |
 | Analytical Note | Formal Note exists or is created with correct identity, source links, canonical structure, and method-section quality (≥4,500 chars; ≥2 original formulas or explicit “原文无公式”; training details; results/ablation/boundaries; ≥4 images or documented shortage) | `NOTE_FAILED` / `NOTE_DEFERRED` / `NOTE_TEMPLATE_REPAIR_REQUIRED` / `NOTE_METHOD_REPAIR_REQUIRED` / `NOTE_QUALITY_FAILED` | Do not ingest a paper into Knowledge |
 | Pair validation | Note ↔ Fulltext reciprocal paths and both keys agree when Fulltext exists | `VALIDATION_FAILED` | Stop Knowledge update |

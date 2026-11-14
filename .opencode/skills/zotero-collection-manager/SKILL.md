@@ -1,6 +1,6 @@
 ---
 name: zotero-collection-manager
-description: "按 Zotero Collection 增量调度 Fetcher、Fulltext Archiver、Analytical Writer 和一致性校验，使用可重试状态而不是以“存在笔记”或临时跳过判断完成；默认单篇/小批量运行，支持断点续传。"
+description: "按本地 collection/paper-registry（默认）或 Zotero Collection（可选 legacy）增量调度 Fetcher、Fulltext Archiver、Analytical Writer 和一致性校验，使用可重试状态而不是以“存在笔记”或临时跳过判断完成；默认单篇/小批量运行，支持断点续传。"
 ---
 
 # Zotero Collection Manager
@@ -23,9 +23,16 @@ Process Log
 
 各环节保持职责边界，不在 Manager 中重写全文或中文笔记。
 
+## 默认：本地 registry 模式
+
+- Collection = `02vault/<collection>/` 与 `03fulltext/<collection>/` 目录；不再读 Zotero Collection。
+- 主键 = `{{PAPER_REGISTRY}}` 的 `paper_id`；PDF 路径 = `pdf_path`；Zotero 只在 legacy 条目上按需读取。
+- 新论文先由 `paper-registry register` 落一行，再进入 Fetcher/Fulltext/Writer；不要用标题匹配代替登记。
+- 批量前读 registry + 现有日志；状态机与 `COMPLETE` 条件不变。
+
 ## 增量与安全规则
 
-- 以 Zotero `zotero_key` 而不是标题作为主键。
+- 以 `paper_id` 而不是标题作为主键；`legacy_zotero_key` 只读。
 - 先读取现有日志；成功条目只在所有核心条件满足时跳过。
 - 默认只处理用户指定的 Collection、单篇或小批量；不得自动批量重跑全库、迁移所有旧笔记或移动 Zotero PDF。
 - 已有 analytical note 但没有全文时，只补 Fulltext 与链接，不重新生成整篇笔记。
@@ -45,7 +52,7 @@ Process Log
 
 ```json
 {
-  "item_key": "Q22PFLNV",
+  "paper_id": "Q22PFLNV",
   "pdf_found": true,
   "fulltext": true,
   "images_valid": true,
@@ -57,7 +64,7 @@ Process Log
 }
 ```
 
-`page_mapping` 取值：`unknown`、`reliable`（3.4.0 且已核验），或相对路径 `page_maps/<zotero_key>.json`（4.1.5 的 `structured_content.json` 生成）。
+`page_mapping` 取值：`unknown`、`reliable`（3.4.0 且已核验），或相对路径 `page_maps/<paper_id>.json`（4.1.5 的 `structured_content.json` 生成）。
 
 核心状态：
 

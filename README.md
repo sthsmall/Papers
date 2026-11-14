@@ -73,7 +73,7 @@ copy evil-read-arxiv\config.example.yaml "<你的Vault根>\99_System\Config\rese
 pip install -r evil-read-arxiv/requirements.txt
 ```
 
-**环境前置**：opencode（加载 skill）、Zotero Desktop（本地 API 端口 23119）、MinerU（PDF→Markdown）、Python 3.10+。
+**环境前置**：opencode（加载 skill）、本地论文 PDF 目录（`research/papers/`）、paper registry（`{{VAULT_ROOT}}/02vault/_index/papers.tsv`）、MinerU（PDF→Markdown）、Python 3.10+。Zotero 是**可选 legacy**，默认流程不再要求。
 
 ## MinerU 安装与模型下载
 
@@ -157,20 +157,43 @@ mineru-kit models verify --tier standard --small-backend torch --vlm-engine lmde
 ### 没有 MinerU 时会发生什么
 
 - `zotero-fulltext-archiver` 停止 → 记录 `FULLTEXT_DEFERRED`，**不会伪造全文、不会写坏 `03fulltext/`**。
-- 其余环节可降级运行（Note-only）：Zotero 元数据/批注读取、基于**原始 PDF** 核验引文的中文简读/精读笔记、知识页维护，以及在线发现（evil-read-arxiv）均不受影响。
+- 其余环节可降级运行（Note-only）：本地 PDF/registry 元数据、基于**原始 PDF** 核验引文的中文简读/精读笔记、知识页维护，以及在线发现（evil-read-arxiv）均不受影响。
 - 约束：无 Fulltext 时，任何结论**不得标记 `fulltext_verified`**。
+
+## 论文身份（paper-registry）
+
+默认不依赖 Zotero；每篇论文用一个稳定 `paper_id`：
+
+- 已有 8 位 key → 直接沿用（如 `2Q48RTFR`）
+- arXiv → `arxiv_2409.18839`
+- DOI → `doi_...`
+- 其余 → `pdf_<PDF SHA-256 前 12 位>`
+
+登记文件：`{{VAULT_ROOT}}\02vault\_index\papers.tsv`，记录 `paper_id / title / authors / year / venue / doi / arxiv_id / collection / pdf_path / fulltext_path / note_path / status / page_mapping / legacy_zotero_key`。
+
+```powershell
+python .opencode\skills\paper-registry\scripts\paper_registry.py resolve `
+  --pdf "{{RESEARCH_DIR}}\papers\paper.pdf" --collection MOT
+python .opencode\skills\paper-registry\scripts\paper_registry.py register `
+  --registry "{{VAULT_ROOT}}\02vault\_index\papers.tsv" `
+  --pdf "{{RESEARCH_DIR}}\papers\paper.pdf" --collection MOT --title "..."
+python .opencode\skills\paper-registry\scripts\paper_registry.py validate `
+  --registry "{{VAULT_ROOT}}\02vault\_index\papers.tsv" --vault "{{VAULT_ROOT}}"
+```
+
+`zotero_key` 仅作为 `legacy_zotero_key` 保留；`zotero` skill 只在需要 BibTeX/引用导出时使用。
 
 ## 工作流关系
 
 推荐按下面顺序使用：
 
-1. `zotero-collection-manager`：读取某个 Zotero 分类、比对处理日志、筛出未完成文献并串行调度。
-2. `zotero-data-fetcher`：抓取单篇论文的元数据、批注、全文缓存和附件信息。
-3. `zotero-fulltext-archiver`：归档已处理的 PDF/MinerU 全文，整理图片和元数据，维护 Note 与 Fulltext 的双向关联。
+1. `paper-registry`：解析本地 PDF、分配 `paper_id`、登记 `papers.tsv`。
+2. `zotero-data-fetcher`：优先读 registry + 本地 PDF；Zotero 模式仅 legacy。
+3. `zotero-fulltext-archiver`：用 `paper_id` + `pdf_path` 归档 MinerU 全文，整理图片/page map，维护 Note 与 Fulltext 关联。
 4. `zotero-analytical-writer`：新笔记按简读模板创建；旧笔记只做 `## 三、方法详解` 原位重写（方法段质量门、配图、引文核验）。
-5. `research-vault-ingest-orchestrator`：按单篇论文编排 Zotero 身份、Fulltext、笔记、Knowledge 决策和校验。
+5. `research-vault-ingest-orchestrator`：按单篇论文编排 `paper_id` 身份、Fulltext、笔记、Knowledge 决策和校验。
 6. `research-vault-knowledge-maintainer`：维护 `knowledge-theme` 主题页、证据地图、条件性与研究空白，执行跨论文覆盖与证据审查。
-7. `research-vault-literature-retrieval`：处理 ResearchVault 文献问题时，先从 Analytical Notes 定位论文，再按需进入对应 Fulltext 或 Zotero PDF 核验。
+7. `research-vault-literature-retrieval`：处理 ResearchVault 文献问题时，先从 Analytical Notes 定位论文，再按需进入对应 Fulltext 或原始 PDF 核验。
 
 ## 在线发现（evil-read-arxiv）
 
@@ -190,7 +213,7 @@ mineru-kit models verify --tier standard --small-backend torch --vlm-engine lmde
 
 ## 统一合并工作流
 
-两套 skill 分工原则：**evil-read-arxiv 负责"找"（在线发现），Zotero 工作流负责"精读和沉淀"（本地证据链）**。
+两套 skill 分工原则：**evil-read-arxiv 负责"找"（在线发现），本地 PDF + registry 工作流负责"精读和沉淀"（本地证据链）**。
 
 ```text
         【发现层 · evil-read-arxiv】
@@ -198,11 +221,11 @@ start-my-day / conf-papers 推荐出论文
    ↓ 筛选值得精读的
 paper-analyze 快速预览（可选）
    ↓
-zotero_add_item(arXiv ID / DOI) 加入 Zotero 库      ← Zotero MCP 衔接点
+paper-registry register 本地 PDF（arXiv/DOI → paper_id）   ← Zotero 可选
    ↓
-        【精读层 · Zotero 工作流】
+        【精读层 · 本地 PDF 工作流】
 ingest-orchestrator / collection-manager 接手
-data-fetcher → fulltext-archiver → analytical-writer → knowledge-maintainer
+paper-registry → fetcher → fulltext-archiver → analytical-writer → knowledge-maintainer
    ↓
         【检索层】
 本地问题：research-vault-literature-retrieval（精读笔记，权威）
@@ -232,6 +255,7 @@ data-fetcher → fulltext-archiver → analytical-writer → knowledge-maintaine
 | `{{MINERU415_VENV}}` | MinerU 4.1.5 venv |
 | `{{MINERU415_KIT}}` | `{{MINERU415_VENV}}\Scripts\mineru-kit.exe` |
 | `{{MINERU_PARSE_PS1}}` | `.opencode/skills/zotero-fulltext-archiver/scripts/mineru_parse.ps1` |
+| `{{PAPER_REGISTRY}}` | `{{VAULT_ROOT}}\02vault\_index\papers.tsv` |
 
 ### 推荐的 Vault 布局（对应占位符）
 

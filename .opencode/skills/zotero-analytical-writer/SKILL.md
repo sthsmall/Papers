@@ -1,6 +1,6 @@
 ---
 name: zotero-analytical-writer
-description: "使用 Zotero metadata、批注和 MinerU Fulltext，按 {{VAULT_ROOT}}\\模板\\论文简读模板.md 创建新笔记，或对既有笔记做方法段原位重写；确保公式、训练细节、配图与原文引用真实可追溯。"
+description: "使用本地 PDF/paper_id、MinerU Fulltext 和可选批注，按 {{VAULT_ROOT}}\\模板\\论文简读模板.md 创建新笔记，或对既有笔记做方法段原位重写；确保公式、训练细节、配图与原文引用真实可追溯。Zotero 为可选 legacy。"
 ---
 
 # Zotero Analytical Writer
@@ -125,7 +125,7 @@ description: "使用 Zotero metadata、批注和 MinerU Fulltext，按 {{VAULT_R
 ## 4. 引文与证据
 
 - 每条关键结论尽量配一条**能在 Fulltext 中 grep 到**的原文引用；引文必须逐字，不用中文摘要反向生成英文 quote。
-- 页码只有在 Original PDF，或 fulltext frontmatter `page_mapping` 指向的 `page_maps/<zotero_key>.json`（4.1.5 `page_idx` + bbox）核验后才写“PDF 第 n 页”；否则写“PDF 页码未验证”。
+- 页码只有在 Original PDF，或 fulltext frontmatter `page_mapping` 指向的 `page_maps/<paper_id>.json`（4.1.5 `page_idx` + bbox）核验后才写“PDF 第 n 页”；否则写“PDF 页码未验证”。
 - OCR 连写/拼写差异（如 `parametereficient`、`oneto-one`、`oficial`）按全文原样转录，并注明“原文 OCR 将 X 连写/拼作 Y”。
 - 公式排版引用若无法逐字 grep，标注“公式排版，此处转写/省略”，不要冒充逐字引文。
 - 区分：作者报告的事实、作者的解释、我们的推断。`引文核验` 节列出已核验的引文与页码状态。
@@ -134,9 +134,9 @@ description: "使用 Zotero metadata、批注和 MinerU Fulltext，按 {{VAULT_R
 
 保留模板 frontmatter：
 
-`title / aliases / tags / created / source / author / year / type / zotero_key / pdf_key / doi / collection / note_path / fulltext_path / task / paradigm / data_scale / method_summary / key_metric / key_result / relevance`
+`title / aliases / tags / created / source / author / year / type / paper_id / pdf_path / legacy_zotero_key / pdf_key / doi / collection / note_path / fulltext_path / task / paradigm / data_scale / method_summary / key_metric / key_result / relevance`
 
-- `zotero_key` 是主键，`pdf_key` 是附件键；标题只用于显示与人工核对。
+- `paper_id` 是主键，`pdf_path` 指向本地 PDF；`legacy_zotero_key`/`pdf_key` 只用于旧数据兼容；标题只用于显示与人工核对。
 - `task` 写研究任务（输入/输出对象）；`paradigm` 写范式；`data_scale` 写数据集/规模；`method_summary` 写机制摘要（不是模块名堆叠）；`key_metric` / `key_result` 写指标与关键数字；`relevance` 写与本项目的关系。
 - 更新既有笔记时保留稳定身份，不创建重复 Note；新增字段只加可确认的值。
 - 不批量重写未指定的历史笔记。
@@ -153,7 +153,7 @@ description: "使用 Zotero metadata、批注和 MinerU Fulltext，按 {{VAULT_R
 
 Note 是结构化理解层，不是 Knowledge 页的替代品。交给 Knowledge Maintainer 时保留：
 
-- 可机读字段与 `zotero_key` / `note_path` / `fulltext_path`；
+- 可机读字段与 `paper_id` / `pdf_path` / `note_path` / `fulltext_path`；
 - 公式、引文、结果表、训练配置、边界；
 - 哪些结论已回查 Fulltext、哪些仍是 Note-only；
 - 不要把 Note 摘要直接标成 `fulltext_verified`；精确结论必须回到 `fulltext_path` 或原 PDF 定向核验。
@@ -171,7 +171,7 @@ Note 是结构化理解层，不是 Knowledge 页的替代品。交给 Knowledge
 1. **盘点**：运行 `scripts/scan_note_quality.py --vault "{{VAULT_ROOT}}"`，扫描 `02vault/**/*.md`（排除中文全译），记录方法段字符数、图片、公式、`引文核验`、YAML；分为 `FULL`（≥4,500）、`BORDER`（4,000–4,500）、`PENDING`（<4,000）。
 2. **分批**：按主题分组（VOS 经典 → 检测器/跟踪基础 → 卫星 MOT → SAM 适配 → RS/VIS），不要按文件名顺序无脑重写。
 3. **逐篇**：读 Fulltext 方法/训练/结果/消融/局限 → 只替换方法段 → 补图 → 补 `引文核验` → 自检。
-4. **验收**：运行同一脚本，确认 `HARD=0`；硬性失败项包括方法段长度、图片缺失/不足未注明、公式 <2 未注明、缺少 `引文核验`、引文未命中、YAML、旧/重复方法标题；软性提醒（空 `zotero_key`、正文内联引文的 OCR/LaTeX 差异）写入状态页。
+4. **验收**：运行同一脚本，确认 `HARD=0`；硬性失败项包括方法段长度、图片缺失/不足未注明、公式 <2 未注明、缺少 `引文核验`、引文未命中、YAML、旧/重复方法标题；软性提醒（空 `paper_id`、正文内联引文的 OCR/LaTeX 差异）写入状态页。
 5. **收口**：更新 `文献索引.md` 的 `方法段` 列、重建 `笔记重写状态.md`、追加 `log.md`；删除旧索引前备份。
 
 不要用“已生成状态页”代替“笔记已达标”；状态页必须由实际扫描结果生成。

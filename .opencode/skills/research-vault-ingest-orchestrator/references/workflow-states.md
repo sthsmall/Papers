@@ -14,7 +14,7 @@ These states describe process progress only. They do not replace evidence roles,
 | `NO_KNOWLEDGE_CHANGE` | Paper is complete but adds no durable Knowledge change | Final log; success |
 | `FULLTEXT_DEFERRED` | PDF/runner condition prevents Fulltext now | Retain accurate partial evidence state |
 | `NOTE_DEFERRED` | Note cannot yet be responsibly created | Retry after source material is available |
-| `PDF_NOT_FOUND` | Resolved item has no usable attachment | Retry with Zotero repair/user input |
+| `PDF_NOT_FOUND` | Resolved item has no usable local PDF | Ask user for the PDF path; Zotero repair is optional legacy |
 | `KEY_CONFLICT` | Identity or attachment mapping is ambiguous | Human review required |
 | `FULLTEXT_FAILED` | MinerU/archive gate failed | Retry targeted Fulltext work only |
 | `VALIDATION_FAILED` | A required contract check failed | Fix only the failing artifact and revalidate |

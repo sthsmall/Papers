@@ -1,6 +1,6 @@
 ---
 name: zotero-fulltext-archiver
-description: "将已有 Zotero PDF 或历史 MinerU 输出归档为可追踪的 ResearchVault Fulltext Markdown：先复用已成功的 MinerU 链路，再写入统一 frontmatter、整理安全图片路径、保留页面映射并执行只读校验。此技能不做中文总结、不改写论文正文、不负责用户检索。"
+description: "将本地 PDF（默认，paper_id + pdf_path）或历史 MinerU 输出归档为可追踪的 ResearchVault Fulltext Markdown：先复用已成功的 MinerU 链路，再写入统一 frontmatter、整理安全图片路径、保留页面映射并执行只读校验。Zotero 为可选 legacy。此技能不做中文总结、不改写论文正文、不负责用户检索。"
 ---
 
 # Zotero Fulltext Archiver
@@ -38,12 +38,12 @@ front/middle/end samples, source identity, image-file/reference checks, and
 no missing image targets. Formal archiving may add schema frontmatter and
 rewrite image paths, but must otherwise preserve the extracted body verbatim.
 
-Before invoking MinerU, inspect the formal `03fulltext` path by `zotero_key`.
-If a formal Fulltext already has matching `zotero_key`/`pdf_key`, valid
+Before invoking MinerU, inspect the formal `03fulltext` path by `paper_id`.
+If a formal Fulltext already has matching `paper_id`/`pdf_path`, valid
 frontmatter, resolved images, and a non-empty article body, reuse it and run
 targeted validation. A Note-template repair is not a reason to rerun MinerU.
 If `page_mapping` is `unknown` and a 4.1.5 `structured_content.json` exists,
-build `page_maps/<zotero_key>.json` and verify 2--3 quotes; otherwise retain
+build `page_maps/<paper_id>.json` and verify 2--3 quotes; otherwise retain
 `unknown`. The Analytical Writer may still verify quotation pages directly
 against the read-only Original PDF.
 
@@ -85,8 +85,8 @@ against the read-only Original PDF.
 正式全文：
 
 ```text
-{{VAULT_ROOT}}\03fulltext\<collection>\<zotero_key>.md
-{{VAULT_ROOT}}\03fulltext\<collection>\images\<zotero_key>\<image-file>
+{{VAULT_ROOT}}\03fulltext\<collection>\<paper_id>.md
+{{VAULT_ROOT}}\03fulltext\<collection>\images\<paper_id>\<image-file>
 ```
 
 旧的 `MinerU_batch` 已归档到 `{{ARCHIVE_ROOT}}\2026-08-10\MinerU_batch\`，不作为运行时输入或正式全文检索目录。当前 Vault 的分析笔记仍位于 `论文库/` 时，不移动它们；仅在全文 frontmatter 中写准确的 `note_path`。
@@ -96,8 +96,8 @@ against the read-only Original PDF.
 若 `MinerU_batch` 已有与 `zotero_key` 唯一对应的 Markdown 和图片：
 
 1. 确认 Zotero 主键、PDF 键、标题和 Collection。
-2. 将旧 Markdown 复制到正式 `03fulltext/<collection>/<zotero_key>.md`；分析笔记中的 Obsidian 链接仍使用 `fulltext/<collection>/<zotero_key>`。
-3. 将图片复制到 `images/<zotero_key>/`，不得使用完整论文标题作为目录名。
+2. 将旧 Markdown 复制到正式 `03fulltext/<collection>/<paper_id>.md`；分析笔记中的 Obsidian 链接仍使用 `fulltext/<collection>/<paper_id>`。
+3. 将图片复制到 `images/<paper_id>/`，不得使用完整论文标题作为目录名。
 4. 将原有图片引用改为相对于 Fulltext Markdown 的安全路径，例如 `![](<images/Q22PFLNV/image.jpg>)`。
 5. 逐一检查每个本地图片引用真实存在；有缺失时不能报告成功。
 
@@ -111,18 +111,19 @@ against the read-only Original PDF.
 ---
 type: literature-fulltext
 title: "..."
-zotero_key: "Q22PFLNV"
-pdf_key: "4RMSR7ZR"
+paper_id: "Q22PFLNV"
+pdf_path: "D:/papers/Q22PFLNV.pdf"
+legacy_zotero_key: "Q22PFLNV"   # 可选，旧数据兼容
 doi: "..."
 collection: "创新经济地理"
-note_path: "论文库/创新经济地理/论文标题.md"
+note_path: "02vault/创新经济地理/论文标题.md"
 fulltext_path: "03fulltext/创新经济地理/Q22PFLNV.md"
-zotero_item: "zotero://select/library/items/Q22PFLNV"
-zotero_pdf: "zotero://open-pdf/library/items/4RMSR7ZR"
 source_type: mineru-4.1.5
 page_mapping: "page_maps/Q22PFLNV.json"
 ---
 ```
+
+`paper_id` 是默认主键；`legacy_zotero_key`、`zotero_item`、`zotero_pdf` 只在旧数据中保留。新论文不需要 Zotero。
 
 Vault 内部路径统一使用 `/`。缺失的 DOI 可留空，但不得伪造。
 
@@ -130,7 +131,7 @@ Vault 内部路径统一使用 `/`。缺失的 DOI 可留空，但不得伪造�
 
 - MinerU Markdown 是证据档案：不翻译、总结、润色、重写、删减或插入模型生成内容。
 - 允许的后处理仅包括 frontmatter、机器定位标记和安全图片路径修复。
-- **4.1.5**：`structured_content.json` 的 `pages[].page_idx` 是 0-based，`page_number = page_idx + 1`，block bbox 为归一化坐标。用 `scripts/build_page_map.py` 生成 `page_maps/<zotero_key>.json`，再写 `page_mapping: "page_maps/<zotero_key>.json"`；先用 2--3 个 quote 对照真实 PDF 验证。
+- **4.1.5**：`structured_content.json` 的 `pages[].page_idx` 是 0-based，`page_number = page_idx + 1`，block bbox 为归一化坐标。用 `scripts/build_page_map.py` 生成 `page_maps/<paper_id>.json`，再写 `page_mapping: "page_maps/<paper_id>.json"`；先用 2--3 个 quote 对照真实 PDF 验证。
 - **3.4.0 fallback**：只有当 `content_list.json`/`middle.json` 与真实 PDF 通过单篇测试可靠对应时，才写 `page_mapping: reliable` 或 `<!-- pdf_page: N -->`。
 - 0-based/1-based 转换必须记录并用真实 PDF 验证；无法可靠映射时写 `page_mapping: unknown`，不要猜 page。
 
@@ -139,8 +140,8 @@ Vault 内部路径统一使用 `/`。缺失的 DOI 可留空，但不得伪造�
 ```powershell
 python ".opencode\skills\zotero-fulltext-archiver\scripts\build_page_map.py" `
   --structured "<MinerU输出>\structured_content.json" `
-  --out "{{VAULT_ROOT}}\03fulltext\<collection>\page_maps\<zotero_key>.json" `
-  --fulltext "{{VAULT_ROOT}}\03fulltext\<collection>\<zotero_key>.md" `
+  --out "{{VAULT_ROOT}}\03fulltext\<collection>\page_maps\<paper_id>.json" `
+  --fulltext "{{VAULT_ROOT}}\03fulltext\<collection>\<paper_id>.md" `
   --update-frontmatter
 ```
 
@@ -148,7 +149,7 @@ python ".opencode\skills\zotero-fulltext-archiver\scripts\build_page_map.py" `
 
 归档完成后：
 
-1. 分析笔记补 `fulltext_path`，并可增加 `[[fulltext/<collection>/<zotero_key>]]` 入口；不因全文归档重写整篇笔记，模板化重排由 `zotero-analytical-writer` 单独负责。
-2. Fulltext 补 `note_path`，确认双方 `zotero_key`、`pdf_key` 一致。
+1. 分析笔记补 `fulltext_path`，并可增加 `[[fulltext/<collection>/<paper_id>]]` 入口；不因全文归档重写整篇笔记，模板化重排由 `zotero-analytical-writer` 单独负责。
+2. Fulltext 补 `note_path`，确认双方 `paper_id` 一致；`legacy_zotero_key`/`pdf_key` 只作旧数据兼容。
 3. 运行链接校验脚本（**可选，需自备**）：`{{RESEARCH_DIR}}\zotero_batch\validate_research_vault_literature_links.py`；脚本缺失时改为逐项核对下一条的双向链接要求，只报告，不自动删除。
 4. 只有 PDF、Fulltext、图片、Note、链接均有效时，才向 Collection Manager 报告 COMPLETE。
