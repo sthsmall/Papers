@@ -11,6 +11,7 @@ AGENTS.md
 
 # 研究临时目录：论文 PDF、MinerU 运行产物（体积大 + 版权风险）
 research/
+ResearchVault_Archive/
 
 # evil-read-arxiv 个人使用数据（API 设置、收藏、反馈、偏好）
 evil-read-arxiv/data/

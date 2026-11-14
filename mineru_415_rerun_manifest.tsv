@@ -1,0 +1,104 @@
+batch	collection	zotero_key	title	pages	current	action	pdf_source	est_min	status
+B01	MOT	2ACQ996N	Toward Unsupervised Realistic Visual Question Answering	17	3.4.0	rerun	zotero	1.2	已归档-4.1.5
+B01	MOT	2IZL6P3F	BoxMask: Revisiting Bounding Box Supervision for Video Object Detection	11	3.4.0	rerun	zotero	1.0	已归档-4.1.5
+B01	MOT	38RG7Q29	ByteTrack: Multi-Object Tracking by Associating Every Detection Box	14	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B01	MOT	3NDT4GUF	Mask-Guided Attention Network for Occluded Pedestrian Detection	9	3.4.0	rerun	zotero	0.9	已归档-4.1.5
+B01	MOT	46ZQVFAE	IoU-aware Single-stage Object Detector for Accurate Localization	22	3.4.0	rerun	zotero	1.4	已归档-4.1.5
+B01	MOT	67ER8AQI	Detecting and Tracking Small and Dense Moving Objects in Satellite Videos: A Benchmark	19	3.4.0	rerun	zotero	1.3	已归档-4.1.5
+B01	MOT	6UIQYRUZ	Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection	33	3.4.0	rerun	zotero	1.9	已归档-4.1.5
+B01	MOT	8G86YBBK	ADA-Track: End-to-End Multi-Camera 3D Multi-Object Tracking with Alternating Detection and Association	11	3.4.0	rerun	zotero	1.0	已归档-4.1.5
+B01	MOT	8JUQUXHA	Selective Mask Propagation for Multi-Object Tracking	8	3.4.0	rerun	zotero	0.8	已归档-4.1.5
+B01	MOT	8PJXAS6G	SPIRIT: Adapting Vision Foundation Models for Unified Single- and Multi-Frame Infrared Small Target Detection	9	3.4.0	rerun	zotero	0.9	已归档-4.1.5
+B02	MOT	8RT4XLRR	Detecting tiny objects in aerial images: A normalized Wasserstein distance and a new benchmark	18	3.4.0	rerun	zotero	1.3	已归档-4.1.5
+B02	MOT	8UKJSRV8	Anchor DETR: Query Design for Transformer-Based Object Detection	8	3.4.0	rerun	zotero	0.8	已归档-4.1.5
+B02	MOT	8VL6N85P	End-to-End Object Detection with Transformers	26	3.4.0	rerun	zotero	1.6	已归档-4.1.5
+B02	MOT	94TFXD4T	StrongSORT: Make DeepSORT Great Again	14	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B02	MOT	9DJZ5UNA	Object Guided External Memory Network for Video Object Detection	10	3.4.0	rerun	zotero	0.9	已归档-4.1.5
+B02	MOT	9DMJMQ4P	MOTRv2: Bootstrapping End-to-End Multi-Object Tracking by Pretrained Object Detectors	10	3.4.0	rerun	zotero	0.9	已归档-4.1.5
+B02	MOT	ANEIAYPQ	Beyond Boxes: Mask-Guided Spatio-Temporal Feature Aggregation for Video Object Detection	23	3.4.0	rerun	zotero	1.5	已归档-4.1.5
+B02	MOT	BM7ZHB75	Object Knowledge Distillation for Joint Detection and Tracking in Satellite Videos	13	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B02	MOT	BSC32LUK	RFLA: Gaussian Receptive Field based Label Assignment for Tiny Object Detection	18	3.4.0	rerun	zotero	1.3	已归档-4.1.5
+B02	MOT	DHYCKLNY	VL-SAM-v3: Memory-Guided Visual Priors for Open-World Object Detection	16	3.4.0	rerun	zotero	1.2	已归档-4.1.5
+B03	MOT	DTDC28LH	Multi-Object Tracking in Satellite Videos With Graph-Based Multitask Modeling	13	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B03	MOT	EMXD3W4X	FeatureSORT: Essential Features for Effective Tracking	14	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B03	MOT		Edge-Optimized DINOv3-YOLOv8-DeepSORT: A Self-Supervised Approach for Real-Time Cross-Dataset Wildlife Surveillance	6	none	rerun_after_key	local:DINOv3YOLOv8DeepSORT-2026.pdf	0.8	验收-待复核;待补key
+B03	MOT	F9JWCNA2	DQ-DETR: DETR with Dynamic Query for Tiny Object Detection	20	3.4.0	rerun	zotero	1.4	已归档-4.1.5
+B03	MOT	FB7IMMXM	GSR-Track: A Geo-Semantic Regularized Sparse tracker for satellite videos	12	3.4.0	rerun	zotero	1.0	已归档-4.1.5
+B03	MOT	I3DD4JUK	Rank & Sort Loss for Object Detection and Instance Segmentation	18	3.4.0	rerun	zotero	1.3	已归档-4.1.5
+B03	MOT	IID8AEER	Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection	14	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B03	MOT		IRDINO: Adapting DINOv3 with Second-Order Motion Awareness for Moving Infrared Small Target Detection	11	none	rerun_after_key	local:IRDINO-2026.pdf	1.0	验收-自动通过;待补key
+B03	MOT	L5WJEGNF	Infrared Small Target Detection in Satellite Videos: A New Dataset and A Novel Recurrent Feature Refinement Framework	18	3.4.0	rerun	zotero	1.3	已归档-4.1.5
+B03	MOT	LBXZ4RUE	Gaze-DETR: Top-Down Guidance Through Priority Maps for Infrared Weak-Small UAV Detection with DETR	19	3.4.0	rerun	zotero	1.3	已归档-4.1.5
+B04	MOT	LU8AF5CT	Zero-Shot Multi-Animal Tracking in the Wild	14	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B04	MOT	MPZK6XMD	Detecting Object Tracking Failure via Sequential Hypothesis Testing	16	3.4.0	rerun	zotero	1.2	已归档-4.1.5
+B04	MOT		MTTrack: A joint mamba-transformer framework with memory enhancement for real-time satellite remote sensing video object tracking	14	none	rerun_after_key	local:MTTrack-2026.pdf	1.1	验收-待复核;待补key
+B04	MOT		Multiscale Collaborative Attention Network for Robust Multiobject Tracking in Satellite Video	13	none	rerun_after_key	local:MCANet-2025.pdf	1.1	验收-备注通过;待补key
+B04	MOT	PCA434N2	Triplet Contrastive Learning for Multiobject Tracking in Satellite Videos	15	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B04	MOT		RAST: Reliability-Aware Spatiotemporal Modeling for Multiobject Tracking in Satellite Videos	19	none	rerun_after_key	local:RAST-2026.pdf	1.3	验收-待复核;待补key
+B04	MOT	S9QMGDBF	OCDet: Object Center Detection via Bounding Box-Aware Heatmap Prediction on Edge Devices with NPUs	19	3.4.0	rerun	zotero	1.3	已归档-4.1.5
+B04	MOT	SS7VWD9A	DINO: DETR with Improved DeNoising Anchor Boxes for End-to-End Object Detection	23	3.4.0	rerun	zotero	1.5	已归档-4.1.5
+B04	MOT	TSF9P4AU	DETRs with Collaborative Hybrid Assignments Training	13	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B04	MOT	WRP9J2EN	SatSAM2: Motion-Constrained Video Object Tracking in Satellite Imagery using Promptable SAM2 and Kalman Priors	14	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B05	MOT	WWLFPWI9	Deformable DETR: Deformable Transformers for End-to-End Object Detection	16	3.4.0	rerun	zotero	1.2	已归档-4.1.5
+B05	MOT	YSTPJKTA	A Multitask Benchmark Dataset for Satellite Video: Object Detection, Tracking, and Segmentation	21	3.4.0	rerun	zotero	1.4	已归档-4.1.5
+B05	MOT	YXFPQZMF	SAM-STIR: Detection-Guided Memory Update for SAM 3-Based Infrared Small and Tiny Object Tracking	15	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B05	MOT	ZLMS3BGN	DETRs with Hybrid Matching	14	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B05	MOT	arXiv:2409.06490	UAVDB: Point-Guided Masks for UAV Detection and Segmentation	14	none	rerun_after_pdf	local:UAVDB_2409.06490.pdf	1.1	验收-自动通过;待补key
+B05	MOT	arXiv:2604.22162	SAMIDARE: Advanced Tracking-by-Segmentation for Dense Scenarios	9	none	rerun_after_pdf	local:SAMIDARE_2604.22162.pdf	0.9	验收-备注通过;待补key
+B06	SAM	4JNGHQGS	Explicit Visual Prompting for Low-Level Structure Segmentations	18	none	rerun_after_pdf	local:EVP_2303.10883.pdf	1.3	已归档-4.1.5
+B06	SAM	5FUKL23J	Taming SAM3 in the Wild: A Concept Bank for Open-Vocabulary Segmentation	25	3.4.0	rerun	zotero	1.6	已归档-4.1.5
+B06	SAM	AHVR8RP4	SAM3-Adapter: Efficient Adaptation of Segment Anything 3 for Camouflage Object Segmentation, Shadow Detection, and Medical Image Segmentation	14	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B06	SAM	CLSI4G97	CoCo-SAM3: Harnessing Concept Conflict in Open-Vocabulary Semantic Segmentation	23	3.4.0	rerun	zotero	1.5	已归档-4.1.5
+B06	SAM		EfficientSAM3: Progressive Hierarchical Distillation for Video Concept Segmentation from SAM1, 2, and 3	8	none	rerun_after_key	local:EfficientSAM3_2511.15833.pdf	0.8	验收-自动通过;待补key
+B06	SAM	FI4V6T6X	IRSAM: Advancing Segment Anything Model for Infrared Small Target Detection	18	none	rerun_after_pdf	local:IRSAM_2407.07520.pdf	1.3	已归档-4.1.5
+B06	SAM	FYNQHLGM	Seg2Track-SAM2: SAM2-based Multi-object Tracking and Segmentation	8	3.4.0	rerun	zotero	0.8	已归档-4.1.5
+B06	SAM	HIVC5I35	Is SAM3 ready for pathology segmentation?	6	3.4.0	rerun	zotero	0.8	已归档-4.1.5
+B06	SAM	ILF4R997	SAM3-UNet: Simplified Adaptation of Segment Anything Model 3	7	3.4.0	rerun	zotero	0.8	已归档-4.1.5
+B06	SAM	J4FN6UJG	Generalization vs. Specialization: Evaluating Segment Anything Model (SAM3) Zero-Shot Segmentation Against Fine-Tuned YOLO Detectors	26	3.4.0	rerun	zotero	1.6	已归档-4.1.5
+B07	SAM	JPM5PJHF	SAM3-I: Segment Anything with Instructions	9	3.4.0	rerun	zotero	0.9	已归档-4.1.5
+B07	SAM	JUUHIAJ5	Grounded SAM: Assembling Open-World Models for Diverse Visual Tasks	11	3.4.0	rerun	zotero	1.0	已归档-4.1.5
+B07	SAM	K9GC4W8Q	SAM 3: Segment Anything with Concepts	76	3.4.0	rerun	zotero	3.7	已归档-4.1.5
+B07	SAM	KJWIE7GQ	The SAM2-to-SAM3 Gap in the Segment Anything Model Family: Why Prompt-Based Expertise Fails in Concept-Driven Image Segmentation	19	3.4.0	rerun	zotero	1.3	已归档-4.1.5
+B07	SAM	KQDE9EJ4	SAM Fails to Segment Anything? -- SAM-Adapter: Adapting SAM in Underperformed Scenes: Camouflage, Shadow, Medical Image Segmentation, and More	13	none	rerun_after_pdf	local:SAM-Adapter_2304.09148.pdf	1.1	已归档-4.1.5
+B07	SAM	KXYGIRQT	SAM2MOT: A Novel Paradigm of Multi-Object Tracking by Segmentation	10	3.4.0	rerun	zotero	0.9	已归档-4.1.5
+B07	SAM		Lightweight Distillation of SAM 3 and DINOv3 for Edge-Deployable Individual-Level Livestock Monitoring and Longitudinal Visual Analytics	15	none	rerun_after_key	local:LivestockDistill_2604.27128.pdf	1.1	验收-自动通过;待补key
+B07	SAM	N3V576RC	Medical SAM3: A Foundation Model for Universal Prompt-Driven Medical Image Segmentation	20	3.4.0	rerun	zotero	1.4	已归档-4.1.5
+B07	SAM	PJC4VHAP	LocSAM3: Box-Supervised Adaptation of SAM3 for Text-Only Chest X-Ray Segmentation	10	3.4.0	rerun	zotero	0.9	已归档-4.1.5
+B07	SAM		SAM3-LiteText: An Anatomical Study of the SAM3 Text Encoder for Efficient Vision-Language Segmentation	10	none	rerun_after_key	local:SAM3LiteText_2602.12173.pdf	0.9	验收-待复核;待补key
+B08	SAM		Skeet-SAM: A Cascade-Based Small Object Detection Architecture for Skeet Shooting	12	none	rerun_after_key	local:SkeetSAM_LNCS16659_ch40.pdf	1.0	验收-待复核;待补key
+B08	SAM	X9KB7NN5	SAM 2: Segment Anything in Images and Videos	42	3.4.0	rerun	zotero	2.3	已归档-4.1.5
+B08	SAM	XRZLIXCC	SAM2-Adapter: Evaluating & Adapting Segment Anything 2 in Downstream Tasks: Camouflage, Shadow, Medical Image Segmentation, and More	14	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B08	SAM	arXiv:2606.27655	Temporal-Emerged Prompting for Segment Anything in Multiframe Infrared Small Target Detection	15	none	rerun_after_pdf	local:TEPSAM_2606.27655.pdf	1.1	验收-待复核;待补key
+B09	VOS	36LSD5NE	Advancing Complex Video Object Segmentation via Tracking-Enhanced Prompt: The 1st Winner for 5th PVUW MOSE Challenge	5	3.4.0	rerun	zotero	0.7	已归档-4.1.5
+B09	VOS		Agent-SAM-I2V: Self-correcting Promptable Video Segmentation via Agentic Drift Detection and Multi-Prompt Fusion	11	none	rerun_after_key	local:AgentSAM-I2V-2026.pdf	1.0	验收-待复核;待补key
+B09	VOS	FDBDS3BA	Putting the Object Back into Video Object Segmentation	22	3.4.0	rerun	zotero	1.4	已归档-4.1.5
+B09	VOS	KAUS4FIC	SAM3-DMS: Decoupled Memory Selection for Multi-target Video Segmentation of SAM3	10	3.4.0	rerun	zotero	0.9	已归档-4.1.5
+B09	VOS	KIH2TFCZ	The 1st Winner for 5th PVUW MeViS-Text Challenge: Strong MLLMs Meet SAM3 for Referring Video Object Segmentation	5	3.4.0	rerun	zotero	0.7	已归档-4.1.5
+B09	VOS	R78WN73D	Associating Objects with Transformers for Video Object Segmentation	20	3.4.0	rerun	zotero	1.4	已归档-4.1.5
+B09	VOS	S5P453KM	ReMeDI: Refined Memory for Disambiguation of Identities with SAM3 in Surgical Segmentation	10	3.4.0	rerun	zotero	0.9	已归档-4.1.5
+B09	VOS	SX6J4Z2U	SAMI2V: Segment Anything Model is an All-rounder for Video Segmentation	20	3.4.0	rerun	zotero	1.4	已归档-4.1.5
+B09	VOS		VigilSAM3: Reinforcement-Optimized Memory Gating for Ultra-Long Surgical Video Segmentation	11	none	rerun_after_key	local:VigilSAM3-2026.pdf	1.0	验收-待复核;待补key
+B09	VOS	arXiv:2603.23788	Re-Prompting SAM 3 via Object Retrieval: 3rd of the 5th PVUW MOSE Track	6	none	rerun_after_pdf	local:RePromptingSAM3_2603.23788.pdf	0.8	验收-自动通过;待补key
+B10	VOS	arXiv:2608.22064	Competitive Memory Readout for Robust Video Object Segmentation: 2nd Place Technical Report for the MOSEv2 Track of the 8th LSVOS Challenge	7	none	rerun_after_pdf	local:CompetitiveMemoryReadout_2608.22064.pdf	0.8	验收-自动通过;待补key
+B10	VOS	arXiv:2608.22193	SAM3Dual: A 3rd Place Solution to the MOSEv2 Track, 8th LSVOS Challenge	13	none	rerun_after_pdf	local:SAM3Dual_2608.22193.pdf	1.1	验收-自动通过;待补key
+B11	RS	5L2RPDK3	On the Effectiveness of Textual Prompting with Lightweight Fine-Tuning for SAM3 Remote Sensing Segmentation	5	3.4.0	rerun	zotero	0.7	已归档-4.1.5
+B11	RS		DisDop: Distillation with Domain Priors for Open-Vocabulary Aerial Object Detection	10	none	rerun_after_key	local:DisDop_2605.24639.pdf	0.9	验收-自动通过;待补key
+B11	RS	JSV8MF9F	Promptable Concept Segmentation from Above: Evaluating SAM 3's Zero-Shot and One-Shot Capabilities in Remote Sensing	14	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+B11	RS		RT-OVAD: Real-Time Open-Vocabulary Aerial Object Detection via Image-Text Collaboration	12	none	rerun_after_key	local:RTOVAD_2408.12246.pdf	1.0	验收-自动通过;待补key
+B11	RS		SKYDET: An End-to-End Multiscale Attentive Detection Network From Foundation Models for Small Objects in Remote Sensing Images	17	none	rerun_after_key	local:SKYDET-2026.pdf	1.2	验收-自动通过;待补key
+B11	RS		SegEarth-OV3: Exploring SAM 3 for Open-Vocabulary Semantic Segmentation in Remote Sensing Images	13	none	rerun_after_key	local:SegEarthOV3_2512.08730.pdf	1.1	验收-自动通过;待补key
+B11	RS		Toward Open Vocabulary Aerial Object Detection with CLIP-Activated Student-Teacher Learning	25	none	rerun_after_key	local:CastDet_2311.11646.pdf	1.6	验收-自动通过;待补key
+B11	RS	arXiv:2507.20776	RingMo-Agent: A Unified Remote Sensing Foundation Model for Multi-Platform and Multi-Modal Reasoning	24	none	rerun_after_pdf	local:RingMo-Agent_2507.20776.pdf	1.5	验收-备注通过;待补key
+B11	RS	arXiv:2606.21863	Prompt-Calibrated SAM 3 for Open-Vocabulary Remote Sensing Semantic Segmentation	5	none	rerun_after_pdf	local:ProCSAM3_2606.21863.pdf	0.7	验收-自动通过;待补key
+B11	RS	arXiv:2609.00814	RingMoClaw	20	none	rerun_after_pdf	local:RingMoClaw_2609.00814.pdf	1.4	验收-自动通过;待补key
+B12	VIS	AFLCADAX	DVIS: Decoupled Video Instance Segmentation Framework	14	3.4.0	rerun	zotero	1.1	已归档-4.1.5
+—	MOT	2Q48RTFR	DRMOT: A Dataset and Framework for RGBD Referring Multi-Object Tracking	13	4.1.5	skip_done	done	0	未开始
+—	MOT	4NQ97YDP	MP2Net: Mask Propagation and Motion Prediction Network for Multiobject Tracking in Satellite Videos	15	4.1.5	skip_done	done	0	未开始
+—	RS	CTAXE5TV	DiffuSAM: Diffusion Guided Zero-Shot Object Grounding for Remote Sensing Imagery	5	4.1.5	skip_done	done	0	未开始
+—	RS	CXJQ2RCU	RemoteSAM: Towards Segment Anything for Earth Observation	31	4.1.5	skip_done	done	0	未开始
+—	SAM	7V2T9NDK	Few-Shot Semantic Segmentation Meets SAM3	14	4.1.5	skip_done	done	0	未开始
+—	SAM	BIGYNNLX	SAM3 Self-Distillation for Fine-Grained GOOSE 2D Semantic Segmentation	6	4.1.5	skip_done	done	0	未开始
+—	SAM		Detect Anything in Real Time: From Single-Prompt Segmentation to Multi-Class Detection		none	defer	missing	0	未开始
+—	SAM	MHHV6S74	Eye image segmentation using visual and concept prompts with Segment Anything Model 3 (SAM3)	11	4.1.5	skip_done	done	0	未开始
+—	SAM	ZGJM7L7M	Concept Alignment Contrast and Long-Short Prompt Memory for Test-Time Adaptation of SAM3 in Medical Image Segmentation	10	4.1.5	skip_done	done	0	未开始
+—	VOS	6PLWQPZW	XMem: Long-Term Video Object Segmentation with an Atkinson-Shiffrin Memory Model	28	4.1.5	skip_done	done	0	未开始
