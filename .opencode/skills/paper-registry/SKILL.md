@@ -1,6 +1,6 @@
 ---
 name: paper-registry
-description: "本地论文身份与元数据登记：为 PDF 生成稳定 paper_id，维护 {{VAULT_ROOT}}\\02vault\\_index\\papers.tsv，校验 PDF/Fulltext/Note 路径；不依赖 Zotero。Use when adding a paper without Zotero, resolving a local PDF's identity, or validating the paper registry."
+description: "本地论文身份与元数据登记：为 PDF 生成稳定 paper_id，维护 Vault 的 02vault/_index/papers.tsv，校验 PDF/Fulltext/Note 路径；不依赖 Zotero。Use when adding a paper without Zotero, resolving a local PDF's identity, or validating the paper registry."
 ---
 
 # Paper Registry

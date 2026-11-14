@@ -1,8 +1,17 @@
 # 去 Zotero 化：ResearchVault 论文身份与本地 PDF 工作流
 
-> 状态：**设计稿，待确认；不改动现有数据**  
+> 状态：**P0/P1/P2 已实施（2026-11-15）；24 篇 key_pending 待归档；Zotero 已降为可选 legacy**
 > 日期：2026-11-15  
 > 目标：停止把 Zotero 作为必选依赖，用「本地 PDF + paper_id + 本地 registry」完成入库、全文、笔记和检索。
+
+## 0. 实施状态
+
+- 已建 `{{VAULT_ROOT}}\02vault\_index\papers.tsv`：103 行，103 个唯一 `paper_id`，102 个本地 PDF，1 个 `DEFERRED`。
+- 已给 103 篇 Fulltext + 102 篇 Note 增加 `paper_id` / `pdf_path`；旧 `zotero_key` 保留为 legacy。
+- 已新增 `paper-registry` skill 与 `paper_registry.py`（resolve/register/validate/list）。
+- 已把 fetcher / archiver / writer / collection-manager / orchestrator 改为本地 PDF 默认；`zotero` 标为 optional legacy。
+- `papers.tsv` 校验：103 行、103 唯一、0 错误。
+- 剩余：24 篇 key_pending 已有 `paper_id` + 本地 PDF，可直接用 4.1.5 归档；1 篇无 PDF 保持 `DEFERRED`。
 
 ## 1. 现状审计
 

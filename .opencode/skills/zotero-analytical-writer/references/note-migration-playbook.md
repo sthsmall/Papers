@@ -15,7 +15,7 @@
 
 扫描 `02vault/**/*.md`，排除中文全译，逐篇记录：
 
-- `zotero_key`、`fulltext_path`、`collection`；
+- `paper_id`、`pdf_path`、`fulltext_path`、`collection`（legacy `zotero_key` 可选）；
 - 方法段标题与字符数（`## 三、方法详解` / `## 方法` / `## 研究方法`）；
 - 图片数、`$$` 公式块数、是否有 `引文核验`、YAML 是否可解析；
 - 分类：`FULL` ≥4,500；`BORDER` 4,000–4,500；`PENDING` <4,000。
@@ -33,7 +33,7 @@ python .opencode/skills/zotero-analytical-writer/scripts/scan_note_quality.py `
 
 ## 2. 单篇流程
 
-1. **读身份**：frontmatter、`fulltext_path`、现有非方法章节；确认 `zotero_key` 是否存在。
+1. **读身份**：frontmatter、`fulltext_path`、现有非方法章节；确认 `paper_id` 是否存在（legacy `zotero_key` 可选）。
 2. **读全文**：先看 Fulltext 的章节标题，定位 Method / Implementation / Training / Experiments / Ablation / Limitation；按行范围读，不整篇泛读。
 3. **写方法段**：按“问题 → 数据流（文字图）→ 逐模块机制 → 训练/推理配置 → 主结果/消融/反常 → 边界”组织；公式保留原文编号，训练缺项写“论文未给”。
 4. **原位替换**：用正则按 `## 方法` / `## 研究方法` 到下一个 `## ` 的区间替换；替换后检查前后缀（frontmatter 和其他章节）未变，不能出现第二个方法标题。
@@ -58,7 +58,7 @@ python .opencode/skills/zotero-analytical-writer/scripts/scan_note_quality.py `
 
 软性提醒（写进状态页，不阻塞）：
 
-- `zotero_key` 为空（Vault-only 条目，需补 Zotero 身份）；
+- `paper_id` 为空（运行 `paper-registry resolve/register` 生成；不再要求 Zotero）；
 - 正文内联引文的 OCR/LaTeX 差异（正式证据以 `引文核验` 节为准）。
 
 ## 4. 索引与日志（批次完成后立即做）
@@ -77,7 +77,7 @@ python .opencode/skills/zotero-analytical-writer/scripts/scan_note_quality.py `
 - **并发写入**：多个批次不要同时改同一文件；发现内容被覆盖，先比对 mtime/内容，再从备份恢复，不要把别人的批次结果当自己的。
 - **并行批次**：可以并行处理不同主题的笔记，但每个批次必须写不同文件；同一篇笔记只能有一个写入者。
 - **报告不等于验收**：子代理或批次的“已完成”报告不能替代本地扫描；每个批次返回后必须独立跑一次 `scan_note_quality.py`，并抽查 1–2 篇的方法段内容与引文是否真的来自 Fulltext。
-- **空 `zotero_key`**：只报告，不伪造；需要先在 Zotero 建条目。
+- **空 `paper_id`**：只报告，不伪造；用 `paper-registry resolve/register` 从本地 PDF/arXiv/DOI 生成，不需要 Zotero。
 
 ## 6. 完成判定
 

@@ -26,7 +26,8 @@ Papers/
 ├── AGENTS.example.md        # 脱敏版项目说明；复制为 AGENTS.md 并填写占位符路径
 ├── opencode.json            # skills.paths 注册两个 skill 目录
 ├── .opencode/
-│   └── skills/              # 本仓库自研的 Zotero 工作流（7 个）
+│   └── skills/              # 本仓库自研的本地 PDF + registry 工作流（9 个）
+│       ├── paper-registry/              # paper_id / papers.tsv
 │       ├── zotero-collection-manager/
 │       ├── zotero-data-fetcher/
 │       ├── zotero-fulltext-archiver/
@@ -34,7 +35,7 @@ Papers/
 │       ├── research-vault-ingest-orchestrator/
 │       ├── research-vault-knowledge-maintainer/
 │       ├── research-vault-literature-retrieval/
-│       └── zotero/          # 第三方 helper skill（提供 scripts/zotero.py）
+│       └── zotero/          # 可选 legacy helper（BibTeX/引用）
 ├── vault-skeleton/          # 最小可用 Vault 骨架（01knowledge/02vault/03fulltext/99_System）
 ├── templates/
 │   └── 论文简读模板.md        # 唯一笔记模板；知识页模板在 knowledge-maintainer/references/
@@ -234,11 +235,11 @@ paper-registry → fetcher → fulltext-archiver → analytical-writer → knowl
 
 **衔接要点**：
 
-1. **入口衔接（唯一交接点）**：`start-my-day` / `conf-papers` 发现的论文，先用 Zotero MCP 的 `zotero_add_item` 按 arXiv ID / DOI 入库，再触发 Zotero 管线做严谨精读。在线推荐笔记不直接成为精读笔记的证据。
+1. **入口衔接（唯一交接点）**：`start-my-day` / `conf-papers` 发现的论文，先把本地 PDF 下载到 `{{RESEARCH_DIR}}\papers\`，用 `paper-registry register` 按 arXiv ID / DOI 分配 `paper_id`，再触发本地 PDF 管线做严谨精读。在线推荐笔记不直接成为精读笔记的证据。
 2. **两套笔记并存**：在线分析笔记（`20_Research/Papers/`，快、带图、可含项目页/博客）与精读笔记（`02vault/`，严谨、原文核验）并存；精读笔记是权威层，在线笔记作为快速预览与溯源补充。
 3. **检索分层**：日常文献问题走 `research-vault-literature-retrieval`（Note-first，原文核验）；`paper-search` 仅用于回忆在线分析笔记中的内容。
-4. **功能重叠避免**：`paper-analyze` 不替代 `zotero-analytical-writer`——前者做在线来源（arXiv/PDF/博客）快速分析，后者做已入库论文的中文精读。
-5. **配置前置**：使用发现层前先完成 `research_interests.yaml` 配置与 Python 依赖安装（见上文"配置"）；使用精读层前先确认 Zotero MCP 可用、模板已复制到 `{{VAULT_ROOT}}\模板\`。
+4. **功能重叠避免**：`paper-analyze` 不替代 `zotero-analytical-writer`——前者做在线来源（arXiv/PDF/博客）快速分析，后者做本地 PDF 已归档论文的中文精读。
+5. **配置前置**：使用发现层前先完成 `research_interests.yaml` 配置与 Python 依赖安装（见上文"配置"）；使用精读层前先确认 `papers.tsv` 可读、模板已复制到 `{{VAULT_ROOT}}\模板\`。Zotero 不再是前置条件。
 
 ## 可配置占位符
 

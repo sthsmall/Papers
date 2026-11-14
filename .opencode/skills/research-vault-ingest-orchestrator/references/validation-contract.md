@@ -14,7 +14,7 @@ Run only the checks applicable to the observed state; never convert an omitted s
 - Note frontmatter preserves the stable identity and required source fields, including `paper_id`, `pdf_path`, `fulltext_path`, and `note_path` when available; legacy `zotero_key`/`pdf_key` are optional.
 - Formal Fulltext exists when the workflow claims a Fulltext result.
 - Note → Fulltext and Fulltext → Note paths resolve when both artifacts exist.
-- `paper_id` agrees across Note and Fulltext; `legacy_zotero_key`/`pdf_key` are optional compatibility fields.
+- `paper_id` agrees across Note and Fulltext; legacy `zotero_key`/`pdf_key` are optional compatibility fields.
 - All Fulltext image links resolve; no missing image target is accepted.
 - Every conclusion that claims a finding has a directly located source quotation; PDF page numbers are present only when verified against the Original PDF or a reliable page mapping.
 - Key quotations are verbatim-greppable in the linked Fulltext; OCR/formula transcription is explicitly marked; unverified page numbers are marked “PDF 页码未验证”.

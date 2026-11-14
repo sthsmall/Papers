@@ -49,7 +49,7 @@ against the read-only Original PDF.
 
 ## 职责边界
 
-执行：`Zotero PDF → MinerU → Fulltext Markdown → 图片整理 → metadata → Note 关联 → validation`。
+执行：`本地 PDF → MinerU → Fulltext Markdown → 图片整理 → metadata → Note 关联 → validation`（Zotero 可选 legacy）。
 
 不执行中文翻译、分析笔记写作、批量检索或 Zotero 数据库改写。
 
@@ -93,9 +93,9 @@ against the read-only Original PDF.
 
 ## 3. 优先迁移旧结果
 
-若 `MinerU_batch` 已有与 `zotero_key` 唯一对应的 Markdown 和图片：
+若历史 `MinerU_batch` 已有与 `paper_id` 唯一对应的 Markdown 和图片：
 
-1. 确认 Zotero 主键、PDF 键、标题和 Collection。
+1. 确认 `paper_id`、本地 `pdf_path`、标题和 Collection。
 2. 将旧 Markdown 复制到正式 `03fulltext/<collection>/<paper_id>.md`；分析笔记中的 Obsidian 链接仍使用 `fulltext/<collection>/<paper_id>`。
 3. 将图片复制到 `images/<paper_id>/`，不得使用完整论文标题作为目录名。
 4. 将原有图片引用改为相对于 Fulltext Markdown 的安全路径，例如 `![](<images/Q22PFLNV/image.jpg>)`。
@@ -113,7 +113,7 @@ type: literature-fulltext
 title: "..."
 paper_id: "Q22PFLNV"
 pdf_path: "D:/papers/Q22PFLNV.pdf"
-legacy_zotero_key: "Q22PFLNV"   # 可选，旧数据兼容
+zotero_key: "Q22PFLNV"   # 可选，legacy only
 doi: "..."
 collection: "创新经济地理"
 note_path: "02vault/创新经济地理/论文标题.md"
@@ -123,7 +123,7 @@ page_mapping: "page_maps/Q22PFLNV.json"
 ---
 ```
 
-`paper_id` 是默认主键；`legacy_zotero_key`、`zotero_item`、`zotero_pdf` 只在旧数据中保留。新论文不需要 Zotero。
+`paper_id` 是默认主键；`zotero_key`（legacy）、`zotero_item`、`zotero_pdf` 只在旧数据中保留。新论文不需要 Zotero。
 
 Vault 内部路径统一使用 `/`。缺失的 DOI 可留空，但不得伪造。
 
@@ -150,6 +150,6 @@ python ".opencode\skills\zotero-fulltext-archiver\scripts\build_page_map.py" `
 归档完成后：
 
 1. 分析笔记补 `fulltext_path`，并可增加 `[[fulltext/<collection>/<paper_id>]]` 入口；不因全文归档重写整篇笔记，模板化重排由 `zotero-analytical-writer` 单独负责。
-2. Fulltext 补 `note_path`，确认双方 `paper_id` 一致；`legacy_zotero_key`/`pdf_key` 只作旧数据兼容。
+2. Fulltext 补 `note_path`，确认双方 `paper_id` 一致；`zotero_key`/`pdf_key` 只作旧数据兼容。
 3. 运行链接校验脚本（**可选，需自备**）：`{{RESEARCH_DIR}}\zotero_batch\validate_research_vault_literature_links.py`；脚本缺失时改为逐项核对下一条的双向链接要求，只报告，不自动删除。
 4. 只有 PDF、Fulltext、图片、Note、链接均有效时，才向 Collection Manager 报告 COMPLETE。

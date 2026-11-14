@@ -1,6 +1,6 @@
 # Vault 骨架（vault-skeleton）
 
-本目录是 ResearchVault 的**最小可用骨架**：把这里的目录/文件复制到 `{{VAULT_ROOT}}`，即可让 `.opencode/skills/` 下的 Zotero 工作流跑起来。
+本目录是 ResearchVault 的**最小可用骨架**：把这里的目录/文件复制到 `{{VAULT_ROOT}}`，即可让 `.opencode/skills/` 下的本地 PDF + paper-registry 工作流跑起来（Zotero 可选）。
 
 ## 复制方式
 

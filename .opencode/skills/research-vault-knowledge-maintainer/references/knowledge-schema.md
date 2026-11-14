@@ -61,7 +61,7 @@ An `evidence-backed` gap explicitly says it is limited to current Vault coverage
 
 ## Source identity and metadata
 
-A human-readable short name is an alias, not an identity. Resolve source identity through the linked Analytical Note and its `zotero_key`; never display a raw key in normal Knowledge prose or properties. Never create an empty note to satisfy a link.
+A human-readable short name is an alias, not an identity. Resolve source identity through the linked Analytical Note and its `paper_id` (legacy `zotero_key` only); never display a raw ID in normal Knowledge prose or properties. Never create an empty note to satisfy a link.
 
 Machine metadata belongs only in `01knowledge/.meta/`; it must not be linked from ordinary Knowledge pages or listed in the Knowledge Index.
 

@@ -1,6 +1,6 @@
 ---
 name: research-vault-literature-retrieval
-description: "ResearchVault 文献知识问题的默认检索技能。先从 02vault/_index 和 {{VAULT_ROOT}}\\02vault 的 Analytical Notes 定位相关论文，再按需要定向进入对应 {{VAULT_ROOT}}\\03fulltext MinerU Markdown，必要时回到 Zotero PDF 验证。若用户消息以‘基于当前 ResearchVault 项目文件检索’（或明确要求基于当前 ResearchVault 项目文件作答）开头，必须优先执行严格的项目文件检索后再回答。纯 Skill/Python/Git/文件整理/MinerU 调试等操作任务不自动触发文献检索。"
+description: "ResearchVault 文献知识问题的默认检索技能。先从 02vault/_index 和 {{VAULT_ROOT}}\\02vault 的 Analytical Notes 定位相关论文，再按需要定向进入对应 {{VAULT_ROOT}}\\03fulltext MinerU Markdown，必要时回到原始 PDF 验证。若用户消息以‘基于当前 ResearchVault 项目文件检索’（或明确要求基于当前 ResearchVault 项目文件作答）开头，必须优先执行严格的项目文件检索后再回答。纯 Skill/Python/Git/文件整理/MinerU 调试等操作任务不自动触发文献检索。"
 ---
 
 # Research Vault Literature Retrieval
@@ -12,7 +12,7 @@ description: "ResearchVault 文献知识问题的默认检索技能。先从 02v
 NOTE-FIRST RETRIEVAL.
 TARGETED FULLTEXT FOLLOW-UP.
 
-Analytical Notes 负责定位和理解论文；MinerU Fulltext 负责补充、核验、细化、追溯和引用原文；Original Zotero PDF 负责最后一级页面、公式、表格、图像和 OCR 验证。
+Analytical Notes 负责定位和理解论文；MinerU Fulltext 负责补充、核验、细化、追溯和引用原文；原始 PDF（本地 `pdf_path`，Zotero 可选）负责最后一级页面、公式、表格、图像和 OCR 验证。
 
 不要把论文库和全文库作为两个平级数据库并行搜索，也不要把 Fulltext 当作默认论文发现层。
 
@@ -21,9 +21,9 @@ Analytical Notes 负责定位和理解论文；MinerU Fulltext 负责补充、�
 - {{VAULT_ROOT}}\02vault 是 PRIMARY RETRIEVAL LAYER 和 SEMANTIC RETRIEVAL LAYER。
 - {{VAULT_ROOT}}\03fulltext 是 SUPPLEMENTARY ORIGINAL-TEXT LAYER 和 SOURCE DETAIL LAYER。
 - 两个目录必须物理分离；不得把 Fulltext 放入 02vault，也不得把 Analytical Note 放入 03fulltext。
-- 两层属于同一篇论文时，统一使用 zotero_key。
-- Note → Fulltext 优先通过 fulltext_path，其次通过 zotero_key，最后才允许唯一的 title fallback。
-- Fulltext → Note 通过 note_path，并同时核对 zotero_key 和 pdf_key。
+- 两层属于同一篇论文时，统一使用 `paper_id`；`zotero_key` 只作 legacy fallback。
+- Note → Fulltext 优先通过 fulltext_path，其次通过 paper_id，最后才允许唯一的 title fallback。
+- Fulltext → Note 通过 note_path，并同时核对 paper_id；legacy `zotero_key`/`pdf_key` 可选。
 - 标题多重匹配、主键冲突或路径指向不一致时，停止该条目并报告冲突，不得猜测。
 - Fulltext 不进入普通 Dataview 文献索引，但 Retrieval 必须能够跨目录访问它。
 
@@ -115,7 +115,7 @@ Knowledge-assisted routing does not authorize a default fulltext-wide scan, raw-
 
 读取与任务规模相称的候选笔记，建立：
 
-paper、task、paradigm、method、metric/result、relevance、zotero_key、fulltext_path。
+paper、paper_id、task、paradigm、method、metric/result、relevance、fulltext_path；legacy zotero_key 可选。
 
 单篇问题不无意义打开全文；高层综述和方法比较优先基于 Notes 回答。
 
@@ -133,8 +133,8 @@ paper、task、paradigm、method、metric/result、relevance、zotero_key、full
 
 ### STEP 6B — NOTE_PLUS_FULLTEXT
 
-1. 从已定位的 Note 读取 fulltext_path；缺失时读取 zotero_key。
-2. 按 fulltext_path → zotero_key → 唯一 title fallback 解析对应 Fulltext。
+1. 从已定位的 Note 读取 fulltext_path；缺失时读取 paper_id。
+2. 按 fulltext_path → paper_id → 唯一 title fallback 解析对应 Fulltext；legacy zotero_key 仅兜底。
 3. 只打开已经由 Notes 定位的论文全文，不重新扩大论文集合。
 4. 继承 Note 的 task、paradigm、method_summary、key_metric、key_result、relevance、关键词和英文术语（历史笔记用旧字段时继承其对应值）。
 5. 用这些上下文在对应 MinerU Markdown 中做 targeted search。
@@ -143,7 +143,7 @@ paper、task、paradigm、method、metric/result、relevance、zotero_key、full
 
 ### STEP 6C — PDF VERIFY
 
-只有 Fulltext 不足或用户要求最终页面验证时，才进入 Original Zotero PDF。页码只有可靠映射或实际 PDF 验证后才能提供；否则明确写 page unknown，不猜页码。
+只有 Fulltext 不足或用户要求最终页面验证时，才进入原始 PDF（本地 `pdf_path`）。页码只有可靠映射或实际 PDF 验证后才能提供；否则明确写 page unknown，不猜页码。
 
 ## 四条强规则
 
@@ -182,11 +182,11 @@ Use MinerU Fulltext to supplement, verify, refine, trace, and quote Analytical N
 
 ## 证据与引用规则
 
-- 原文只能来自 MinerU Fulltext 或 Original Zotero PDF，不得由中文 Note 反向生成英文 quote。
+- 原文只能来自 MinerU Fulltext 或原始 PDF（Zotero 附件可选), 不得由中文 Note 反向生成英文 quote。
 - Quote 必须读取上下文，并检查 however、although、not、only when、conditional、hypothesis、limitation 和 robustness 等限定。
 - Fulltext 缺失时明确说明“该 analytical note 当前尚未建立 MinerU fulltext”，不得用模型记忆补论文内容。
 - 默认 Vault-only。只有用户明确要求外部论文或联网搜索时才切换外部证据模式。
-- 保持可追踪链路：问题 → 索引 → Note → zotero_key → fulltext_path → section/context → PDF page（如已验证）→ 回答。
+- 保持可追踪链路：问题 → 索引 → Note → paper_id → fulltext_path → section/context → PDF page（如已验证）→ 回答。
 
 ## 研究方向与跨论文比较
 

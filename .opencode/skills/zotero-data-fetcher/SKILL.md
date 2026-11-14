@@ -13,9 +13,9 @@ description: "根据本地 PDF/paper_id（默认）或 Zotero Item Key（可选 
 
 尽可能输出以下字段，并保持同名：
 
-`paper_id`、`pdf_path`、`title`、`authors`、`year`、`venue`、`doi`、`arxiv_id`、`collection`、`note_path`、`fulltext_path`、`annotations`、`legacy_zotero_key`。
+`paper_id`、`pdf_path`、`title`、`authors`、`year`、`venue`、`doi`、`arxiv_id`、`collection`、`note_path`、`fulltext_path`、`annotations`、`zotero_key`（legacy）。
 
-`paper_id` 是默认主键；`legacy_zotero_key`/`pdf_key` 只用于旧数据兼容。
+`paper_id` 是默认主键；`zotero_key`/`pdf_key` 只用于旧数据兼容。
 
 ## 模式 0：本地 PDF（默认）
 

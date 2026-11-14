@@ -19,7 +19,7 @@ These paths take precedence over legacy folder names appearing in historical not
 
 - Read the analytical-note indexes in `02vault/_index/` first: `文献索引.md`, `研究主题索引.md`, `研究方法索引.md`, and `字段补全检查.md` when present.
 - Compile from Analytical Notes. Do not begin discovery from `fulltext/`.
-- Resolve every scientific claim to one or more `zotero_key` values and Analytical Notes. For exact wording, definitions, model details, coefficients, formulas, or mechanisms, follow the note's `fulltext_path` and make a targeted search there.
+- Resolve every scientific claim to one or more `paper_id` values and Analytical Notes; `zotero_key` is legacy only. For exact wording, definitions, model details, coefficients, formulas, or mechanisms, follow the note's `fulltext_path` and make a targeted search there.
 - Treat a Knowledge Page as a derived artifact. It may link to pages for navigation, but never use a Knowledge Page as evidence for another scientific claim.
 - On incremental ingestion, re-evaluate the prior synthesis against the new Analytical Note; do not treat prior knowledge text as supporting evidence.
 - A same-path Analytical Note template repair is a presentation/traceability maintenance action, not by itself a new scientific contribution. Re-check source-note resolution and validator coverage, but do not create or revise a Knowledge Page solely because the Note was normalized to `{{VAULT_ROOT}}\模板\论文简读模板.md`.
@@ -67,7 +67,7 @@ The template frontmatter is a writing contract; the frozen Knowledge schema is a
 
 For every paper used in a Knowledge Page, parse both layers before writing a claim:
 
-- **Structural library layer:** the Analytical Note frontmatter and structured sections (`task`, `paradigm`, `data_scale`, `method_summary`, `key_metric`, `key_result`, `relevance`, limitations, formulas, quotes, `zotero_key`, and `fulltext_path`; historical Notes using the old field names `theme`/`study_area`/`data_source`/`methodology`/`core_variable`/`key_finding` map to these equivalents).
+- **Structural library layer:** the Analytical Note frontmatter and structured sections (`paper_id`, `pdf_path`, `task`, `paradigm`, `data_scale`, `method_summary`, `key_metric`, `key_result`, `relevance`, limitations, formulas, quotes, `fulltext_path`, and optional legacy `zotero_key`; historical Notes using the old field names `theme`/`study_area`/`data_source`/`methodology`/`core_variable`/`key_finding` map to these equivalents).
 - **Original-text layer:** the linked `03fulltext` Markdown, or the original PDF when Fulltext is absent or a page-level detail needs verification. Search the original text for the exact result, definition, mechanism, threshold, formula, limitation, and qualifying condition being written.
 
 The Note supplies the structured map; the Fulltext supplies the primary evidence. Do not write a precise coefficient, threshold, formula, mechanism, or quotation from the Note alone when a linked Fulltext exists. If Fulltext is unavailable, mark the claim `note_supported`, record the missing-verification boundary, and do not invent a page number or quote.
@@ -94,7 +94,7 @@ All user-facing Knowledge titles, headings, synthesis, evidence descriptions, ga
 
 ## Workflow
 
-1. Read `02vault/_index/`, then candidate Analytical Notes. Build a coverage ledger recording title, `zotero_key`, note path, Fulltext availability, variables, methods, findings, limitations, and the page(s) to which each paper will be routed.
+1. Read `02vault/_index/`, then candidate Analytical Notes. Build a coverage ledger recording title, `paper_id`, note path, Fulltext availability, variables, methods, findings, limitations, and the page(s) to which each paper will be routed.
 2. Read `.opencode/skills/research-vault-knowledge-maintainer/references/knowledge-schema.md` and the matching page template before drafting. Read `01knowledge/index.md` and find canonical pages by title and aliases. Decide explicitly which pages to update, create, or leave unchanged.
 3. For each precise claim, inspect the structured Note first and then search the linked Fulltext or PDF for the exact result and its qualifiers. Record the verification state; do not treat a Note-only summary as Fulltext evidence.
 4. Update evidence lists and cross-links. Keep `evidence_count` equal to the distinct Analytical Notes in `source_notes`; add a real-path source link for every supporting paper. It is a page-coverage count, never a claim-support count.
@@ -125,11 +125,11 @@ Knowledge maintenance must never create empty Markdown files merely to satisfy u
 
 ### Stable Source Resolution Rule
 
-Resolve source identity through the actual Analytical Note and its `zotero_key`; use the short name only for display. A link is valid only when its target is a formal Analytical Note (`#literature-note` or official Analytical Note metadata), not merely an existing Markdown file.
+Resolve source identity through the actual Analytical Note and its `paper_id`; `zotero_key` is legacy only. Use the short name only for display. A link is valid only when its target is a formal Analytical Note (`#literature-note` or official Analytical Note metadata), not merely an existing Markdown file.
 
 ## Machine Identity Resolution Rule
 
-The stable paper identity remains the `zotero_key` stored in the linked Analytical Note. Knowledge pages use `source_notes` as their evidence list; when a machine identifier is needed, resolve `source_notes` → Analytical Note → `zotero_key` → `fulltext_path`. Do not store a duplicate `supporting_papers` list of raw keys in a human-readable Knowledge page.
+The stable paper identity remains the `paper_id` stored in the linked Analytical Note. Knowledge pages use `source_notes` as their evidence list; when a machine identifier is needed, resolve `source_notes` → Analytical Note → `paper_id` → `fulltext_path`. Do not store a duplicate `supporting_papers` list of raw keys in a human-readable Knowledge page.
 
 ## Claim-level Evidence Rule
 

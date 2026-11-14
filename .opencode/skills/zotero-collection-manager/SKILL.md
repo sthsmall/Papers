@@ -32,7 +32,7 @@ Process Log
 
 ## 增量与安全规则
 
-- 以 `paper_id` 而不是标题作为主键；`legacy_zotero_key` 只读。
+- 以 `paper_id` 而不是标题作为主键；`zotero_key` 只读 legacy。
 - 先读取现有日志；成功条目只在所有核心条件满足时跳过。
 - 默认只处理用户指定的 Collection、单篇或小批量；不得自动批量重跑全库、迁移所有旧笔记或移动 Zotero PDF。
 - 已有 analytical note 但没有全文时，只补 Fulltext 与链接，不重新生成整篇笔记。
