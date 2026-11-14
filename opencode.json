@@ -5,5 +5,17 @@
       ".opencode/skills",
       "evil-read-arxiv/skills"
     ]
-  }
+  },
+  "policies": [
+    {
+      "action": "skill.use",
+      "resource": "report",
+      "effect": "deny"
+    },
+    {
+      "action": "skill.use",
+      "resource": "skill-creator",
+      "effect": "deny"
+    }
+  ]
 }

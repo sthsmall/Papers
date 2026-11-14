@@ -26,7 +26,7 @@ Papers/
 ├── AGENTS.example.md        # 脱敏版项目说明；复制为 AGENTS.md 并填写占位符路径
 ├── opencode.json            # skills.paths 注册两个 skill 目录
 ├── .opencode/
-│   └── skills/              # 本项目统一维护的 skill（12 个）
+│   └── skills/              # 本项目统一维护的 skill（14 个）
 │       ├── paper-registry/              # paper_id / papers.tsv
 │       ├── zotero-collection-manager/
 │       ├── zotero-data-fetcher/
@@ -38,7 +38,9 @@ Papers/
 │       ├── zotero/          # 可选 legacy helper（BibTeX/引用）
 │       ├── obsidian-bases/  # .base 文件
 │       ├── obsidian-cli/    # Obsidian CLI
-│       └── obsidian-markdown/  # Obsidian 语法
+│       ├── obsidian-markdown/  # Obsidian 语法
+│       ├── json-canvas/     # .canvas 节点图
+│       └── defuddle/        # 网页正文 → 干净 Markdown
 ├── vault-skeleton/          # 最小可用 Vault 骨架（01knowledge/02vault/03fulltext/99_System）
 ├── templates/
 │   └── 论文简读模板.md        # 唯一笔记模板；知识页模板在 knowledge-maintainer/references/
