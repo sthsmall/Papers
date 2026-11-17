@@ -92,13 +92,13 @@ B11	RS	arXiv:2507.20776	RingMo-Agent: A Unified Remote Sensing Foundation Model 
 B11	RS	arXiv:2606.21863	Prompt-Calibrated SAM 3 for Open-Vocabulary Remote Sensing Semantic Segmentation	5	none	rerun_after_pdf	local:ProCSAM3_2606.21863.pdf	0.7	验收-自动通过;待补key
 B11	RS	arXiv:2609.00814	RingMoClaw	20	none	rerun_after_pdf	local:RingMoClaw_2609.00814.pdf	1.4	验收-自动通过;待补key
 B12	VIS	AFLCADAX	DVIS: Decoupled Video Instance Segmentation Framework	14	3.4.0	rerun	zotero	1.1	已归档-4.1.5
-—	MOT	2Q48RTFR	DRMOT: A Dataset and Framework for RGBD Referring Multi-Object Tracking	13	4.1.5	skip_done	done	0	未开始
-—	MOT	4NQ97YDP	MP2Net: Mask Propagation and Motion Prediction Network for Multiobject Tracking in Satellite Videos	15	4.1.5	skip_done	done	0	未开始
-—	RS	CTAXE5TV	DiffuSAM: Diffusion Guided Zero-Shot Object Grounding for Remote Sensing Imagery	5	4.1.5	skip_done	done	0	未开始
-—	RS	CXJQ2RCU	RemoteSAM: Towards Segment Anything for Earth Observation	31	4.1.5	skip_done	done	0	未开始
-—	SAM	7V2T9NDK	Few-Shot Semantic Segmentation Meets SAM3	14	4.1.5	skip_done	done	0	未开始
-—	SAM	BIGYNNLX	SAM3 Self-Distillation for Fine-Grained GOOSE 2D Semantic Segmentation	6	4.1.5	skip_done	done	0	未开始
+—	MOT	2Q48RTFR	DRMOT: A Dataset and Framework for RGBD Referring Multi-Object Tracking	13	4.1.5	skip_done	done	0	已归档-4.1.5
+—	MOT	4NQ97YDP	MP2Net: Mask Propagation and Motion Prediction Network for Multiobject Tracking in Satellite Videos	15	4.1.5	skip_done	done	0	已归档-4.1.5
+—	RS	CTAXE5TV	DiffuSAM: Diffusion Guided Zero-Shot Object Grounding for Remote Sensing Imagery	5	4.1.5	skip_done	done	0	已归档-4.1.5
+—	RS	CXJQ2RCU	RemoteSAM: Towards Segment Anything for Earth Observation	31	4.1.5	skip_done	done	0	已归档-4.1.5
+—	SAM	7V2T9NDK	Few-Shot Semantic Segmentation Meets SAM3	14	4.1.5	skip_done	done	0	已归档-4.1.5
+—	SAM	BIGYNNLX	SAM3 Self-Distillation for Fine-Grained GOOSE 2D Semantic Segmentation	6	4.1.5	skip_done	done	0	已归档-4.1.5
 —	SAM		Detect Anything in Real Time: From Single-Prompt Segmentation to Multi-Class Detection		none	defer	missing	0	未开始
-—	SAM	MHHV6S74	Eye image segmentation using visual and concept prompts with Segment Anything Model 3 (SAM3)	11	4.1.5	skip_done	done	0	未开始
-—	SAM	ZGJM7L7M	Concept Alignment Contrast and Long-Short Prompt Memory for Test-Time Adaptation of SAM3 in Medical Image Segmentation	10	4.1.5	skip_done	done	0	未开始
-—	VOS	6PLWQPZW	XMem: Long-Term Video Object Segmentation with an Atkinson-Shiffrin Memory Model	28	4.1.5	skip_done	done	0	未开始
+—	SAM	MHHV6S74	Eye image segmentation using visual and concept prompts with Segment Anything Model 3 (SAM3)	11	4.1.5	skip_done	done	0	已归档-4.1.5
+—	SAM	ZGJM7L7M	Concept Alignment Contrast and Long-Short Prompt Memory for Test-Time Adaptation of SAM3 in Medical Image Segmentation	10	4.1.5	skip_done	done	0	已归档-4.1.5
+—	VOS	6PLWQPZW	XMem: Long-Term Video Object Segmentation with an Atkinson-Shiffrin Memory Model	28	4.1.5	skip_done	done	0	已归档-4.1.5

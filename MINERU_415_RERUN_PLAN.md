@@ -1,6 +1,6 @@
 # MinerU 4.1.5 全量重跑计划
 
-> 状态：**运行完成（93/93）；68 篇 ready 已归档 4.1.5；24 篇 key_pending 已有 paper_id/PDF，待归档；1 篇 DEFERRED**
+> 状态：**运行完成（93/93）；77 篇 ready 已归档 4.1.5；24 篇 key_pending 已有 paper_id/PDF，待归档；1 篇 DEFERRED**
 > 日期：2026-11-11  
 > 范围：ResearchVault 现有 103 篇 Fulltext 对应的 PDF；不覆盖旧全文，先 staging、验收、再替换。  
 > 清单：`mineru_415_rerun_manifest.tsv`（103 行，逐篇 batch / key / pages / action / status）  
@@ -130,7 +130,7 @@ page map: {{VAULT_ROOT}}\03fulltext\<collection>\page_maps\<key>.json
 - 加上此前 3 篇试点，共验收 93 篇。
 - 验收结果：**53 自动通过、16 备注通过（仅少 1 个 display formula）、24 待复核、0 硬失败**。
 - 复核结论：24 篇待复核中，16 篇 ready 已确认可归档（`2IZL6P3F` 的 2 个窄表头已手工修复）；8 篇 key_pending 保留复核记录，等补 key 后再定。
-- 归档结果：**68 篇 ready 已替换为 4.1.5**，旧全文备份到 `{{ARCHIVE_ROOT}}\2026-11-11_mineru340_fulltext\`；**24 篇 key_pending 已有 `paper_id` + 本地 PDF，可直接归档；1 篇无 PDF 保持 `DEFERRED`**。
+- 归档结果：**77 篇 ready 已替换为 4.1.5**（68 篇最终批次 + 9 篇早期 A/B 输出），旧全文备份到 `{{ARCHIVE_ROOT}}\2026-11-11_mineru340_fulltext\`；**24 篇 key_pending 已有 `paper_id` + 本地 PDF，可直接归档；1 篇无 PDF 保持 `DEFERRED`**。
 - 明细：`rerun_2026-11/verification_clean.tsv`；报告：`rerun_2026-11/verification_report.md`；替换日志：`rerun_2026-11/replacement_log.tsv`。
 
 ## 9. 确认清单
