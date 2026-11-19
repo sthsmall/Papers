@@ -145,6 +145,23 @@ python ".opencode\skills\zotero-fulltext-archiver\scripts\build_page_map.py" `
   --update-frontmatter
 ```
 
+## 5.1 多面板图排版
+
+MinerU 把一张多面板图拆成多个独立图片块，并按块顺序输出；直接落盘会得到 4 张竖排小图（且常是列优先顺序）。归档后跑一次排版：
+
+```powershell
+python ".opencode\skills\zotero-fulltext-archiver\scripts\arrange_figure_rows.py" --dry-run
+python ".opencode\skills\zotero-fulltext-archiver\scripts\arrange_figure_rows.py" --apply
+```
+
+合并条件（保守，只处理无歧义的情况）：
+
+- 连续 ≥2 个图片行，且都来自同一页 `page_N_*`；
+- 纵向共享同一带（重叠 ≥ 中位高度 60%），横向互不重叠；
+- 合并为一行 CSS grid，顺序按 bbox 的 x 从左到右，列宽按 bbox 宽度比例；自然宽度 <500 px 的图加 `max-width` 防止放大发虚。
+
+跨页连排、混合尺寸（如整页拼图）、纵向堆叠的两张不同图一律保持原样。记录写入 `fulltext_image_layout_log.tsv`。图片正文内容、图片文件与图注文字都不改，只改引用方式，因此仍满足“正文逐字保留”。
+
 ## 6. 关联与校验
 
 归档完成后：
