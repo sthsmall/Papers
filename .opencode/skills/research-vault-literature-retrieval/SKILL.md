@@ -12,7 +12,7 @@ description: "ResearchVault 文献知识问题的默认检索技能。先从 02v
 NOTE-FIRST RETRIEVAL.
 TARGETED FULLTEXT FOLLOW-UP.
 
-Analytical Notes 负责定位和理解论文；MinerU Fulltext 负责补充、核验、细化、追溯和引用原文；原始 PDF（本地 `pdf_path`，Zotero 可选）负责最后一级页面、公式、表格、图像和 OCR 验证。
+Analytical Notes 负责定位和理解论文；MinerU Fulltext 负责补充、核验、细化、追溯和引用原文；原始 PDF（本地 `pdf_path`）负责最后一级页面、公式、表格、图像和 OCR 验证。
 
 不要把论文库和全文库作为两个平级数据库并行搜索，也不要把 Fulltext 当作默认论文发现层。
 
@@ -21,9 +21,9 @@ Analytical Notes 负责定位和理解论文；MinerU Fulltext 负责补充、�
 - {{VAULT_ROOT}}\02vault 是 PRIMARY RETRIEVAL LAYER 和 SEMANTIC RETRIEVAL LAYER。
 - {{VAULT_ROOT}}\03fulltext 是 SUPPLEMENTARY ORIGINAL-TEXT LAYER 和 SOURCE DETAIL LAYER。
 - 两个目录必须物理分离；不得把 Fulltext 放入 02vault，也不得把 Analytical Note 放入 03fulltext。
-- 两层属于同一篇论文时，统一使用 `paper_id`；`zotero_key` 只作 legacy fallback。
+- 两层属于同一篇论文时，统一使用 `paper_id`；不使用 Zotero 字段。
 - Note → Fulltext 优先通过 fulltext_path，其次通过 paper_id，最后才允许唯一的 title fallback。
-- Fulltext → Note 通过 note_path，并同时核对 paper_id；legacy `zotero_key`/`pdf_key` 可选。
+- Fulltext → Note 通过 note_path，并同时核对 paper_id；不再使用 Zotero 字段。
 - 标题多重匹配、主键冲突或路径指向不一致时，停止该条目并报告冲突，不得猜测。
 - Fulltext 不进入普通 Dataview 文献索引，但 Retrieval 必须能够跨目录访问它。
 
@@ -56,7 +56,7 @@ Analytical Notes 负责定位和理解论文；MinerU Fulltext 负责补充、�
 - `从当前 ResearchVault 项目文件中检索`
 - `先检索 ResearchVault 再回答`
 
-固定短语是最高优先级触发词。严格模式只改变检索启动顺序，不改变本技能已有的 canonical identity、Note/Fulltext 证据链、证据强度、引用追踪、Zotero 验证和只读保护规则。
+固定短语是最高优先级触发词。严格模式只改变检索启动顺序，不改变本技能已有的 canonical identity、Note/Fulltext 证据链、证据强度、引用追踪、原始 PDF 验证和只读保护规则。
 
 ## Strict project-file retrieval mode
 
@@ -66,7 +66,7 @@ Analytical Notes 负责定位和理解论文；MinerU Fulltext 负责补充、�
 
 `USER QUESTION → PARSE RESEARCH QUESTION → SEARCH CURRENT RESEARCHVAULT PROJECT FILES → IDENTIFY CANDIDATE PAPERS → RESOLVE CANONICAL SOURCE IDENTITY → LOCATE REAL ANALYTICAL NOTES → LOCATE MATCHING FULLTEXTS → VERIFY IMPORTANT CLAIMS WHEN REQUIRED → CLASSIFY EVIDENCE → SYNTHESIZE ANSWER`
 
-严格模式下，优先使用当前项目环境实际返回的文件检索结果。开始检索时不要要求用户提供 Windows absolute path、精确 Note/Fulltext 文件名、Zotero key 或 DOI；只有项目文件结果不足以解决 source identity 时，才进一步使用这些定位信息。
+严格模式下，优先使用当前项目环境实际返回的文件检索结果。开始检索时不要要求用户提供 Windows absolute path、精确 Note/Fulltext 文件名或 DOI；只有项目文件结果不足以解决 source identity 时，才进一步使用这些定位信息。
 
 对核心来源尽量建立并核验：`Canonical paper ↔ actual Analytical Note ↔ matching Fulltext`。Analytical Note 用于理解研究设计、数据、方法、主要发现、局限和主题关系；Fulltext 用于核验重要结论、数值、模型结果、显著性、因果性、变量定义、阈值和作者原始解释。沿用本技能已有证据 schema，不另建第二套 evidence taxonomy。
 
@@ -115,7 +115,7 @@ Knowledge-assisted routing does not authorize a default fulltext-wide scan, raw-
 
 读取与任务规模相称的候选笔记，建立：
 
-paper、paper_id、task、paradigm、method、metric/result、relevance、fulltext_path；legacy zotero_key 可选。
+paper、paper_id、task、paradigm、method、metric/result、relevance、fulltext_path；不需要 Zotero 字段。
 
 单篇问题不无意义打开全文；高层综述和方法比较优先基于 Notes 回答。
 
@@ -134,7 +134,7 @@ paper、paper_id、task、paradigm、method、metric/result、relevance、fullte
 ### STEP 6B — NOTE_PLUS_FULLTEXT
 
 1. 从已定位的 Note 读取 fulltext_path；缺失时读取 paper_id。
-2. 按 fulltext_path → paper_id → 唯一 title fallback 解析对应 Fulltext；legacy zotero_key 仅兜底。
+2. 按 fulltext_path → paper_id → 唯一 title fallback 解析对应 Fulltext；不使用 Zotero 字段。
 3. 只打开已经由 Notes 定位的论文全文，不重新扩大论文集合。
 4. 继承 Note 的 task、paradigm、method_summary、key_metric、key_result、relevance、关键词和英文术语（历史笔记用旧字段时继承其对应值）。
 5. 用这些上下文在对应 MinerU Markdown 中做 targeted search。
@@ -182,7 +182,7 @@ Use MinerU Fulltext to supplement, verify, refine, trace, and quote Analytical N
 
 ## 证据与引用规则
 
-- 原文只能来自 MinerU Fulltext 或原始 PDF（Zotero 附件可选), 不得由中文 Note 反向生成英文 quote。
+- 原文只能来自 MinerU Fulltext 或原始 PDF), 不得由中文 Note 反向生成英文 quote。
 - Quote 必须读取上下文，并检查 however、although、not、only when、conditional、hypothesis、limitation 和 robustness 等限定。
 - Fulltext 缺失时明确说明“该 analytical note 当前尚未建立 MinerU fulltext”，不得用模型记忆补论文内容。
 - 默认 Vault-only。只有用户明确要求外部论文或联网搜索时才切换外部证据模式。
@@ -233,7 +233,7 @@ VERIFY THE SOURCE.
 以下问题必须按 paper-level candidate pool 处理：文献综述、已有研究发现、共识与争议、指标方向比较、方法比较、研究缺口、直接/间接/中介效应。
 
 1. **Topic discovery**：Knowledge Notes 只负责导航同义词、指标、方法和候选研究；正式候选必须回到 `scope=papers` 的 Analytical Note 结果。
-2. **Candidate collection**：为每个语义主题维护候选池，并跨所有 query 合并。优先使用 Gateway 返回的 `paper_id`，必要时依次使用 Zotero Key、DOI、唯一规范化标题。Analytical Note、Fulltext 和 Knowledge Note 的文件命中不得直接当作论文数；同一论文多次命中只能计 1 篇。
+2. **Candidate collection**：为每个语义主题维护候选池，并跨所有 query 合并。优先使用 Gateway 返回的 `paper_id`，必要时依次使用 DOI、唯一规范化标题。Analytical Note、Fulltext 和 Knowledge Note 的文件命中不得直接当作论文数；同一论文多次命中只能计 1 篇。
 3. **Per-query accounting**：每次 Search 都记录 `query`、`raw_hits`、`unique_papers_this_query`、`new_unique_papers`、`master_unique_papers`、`page`、`has_more` 和 `next_page`。Gateway 的 `total_unique_papers` 是该 query 跨页的总数，不是跨 query 的候选池总数；跨 query 的池必须由模型继续合并。
 4. **Pagination and coverage**：使用 `scope=papers` 和 `page_size=30`（旧客户端可用 `top_k=30`）。只要 `has_more=true` 且候选池未达到最低覆盖，就必须请求 `next_page`；不能把当前页、文件数或核验数当作论文数。综述候选池最低目标为 15 篇，默认目标为 20 篇，一般覆盖范围为 20–30 篇。
 5. **Allowed stopping conditions**：候选收集仅可在以下任一条件成立时停止：`master_unique_papers >= 20`（或用户明确指定的目标）；已执行多个语义不同的 query 且每个 query 的所有页面均已到尾部（`has_more=false`）；或连续 2–3 个概念不同的扩展 query 均只产生 `new_unique_papers <= 1`，且没有出现新的指标、机制、方法、尺度或结果类型。单个 zero-new query、结果重叠、已经找到几篇高相关论文或已经核验 5–7 篇，均不是停止理由。若最终少于 15 篇，必须报告 query、页面、`has_more` 和候选统计，并区分数据不足与检索覆盖不足。

@@ -1,6 +1,6 @@
 ---
 name: research-vault-ingest-orchestrator
-description: "Orchestrate the verified ResearchVault single-paper ingest workflow from paper identity (paper_id + local PDF; Zotero optional legacy) through Fulltext, Analytical Note, Knowledge decision, validation, and append-only logging. Use only when the user explicitly identifies paper(s) to add or asks to assess the ingest state of specified paper(s)."
+description: "Orchestrate the verified ResearchVault single-paper ingest workflow from paper identity (paper_id + local PDF) through Fulltext, Analytical Note, Knowledge decision, validation, and append-only logging. Use only when the user explicitly identifies paper(s) to add or asks to assess the ingest state of specified paper(s)."
 ---
 
 # ResearchVault Ingest Orchestrator
@@ -9,7 +9,7 @@ description: "Orchestrate the verified ResearchVault single-paper ingest workflo
 
 This is the production control plane for a **specified** paper. It orchestrates existing specialist Skills; it does not reimplement paper-registry resolution, MinerU conversion, Analytical Note writing, Knowledge synthesis, or retrieval.
 
-It never performs discovery, searches the paper registry or Zotero for interesting papers, or downloads new papers unless the user explicitly requests that work. It never restarts an already complete pipeline merely because a new ingest request arrived.
+It never performs discovery, searches the paper registry for interesting papers, or downloads new papers unless the user explicitly requests that work. It never restarts an already complete pipeline merely because a new ingest request arrived.
 
 Current production layout:
 
@@ -21,14 +21,14 @@ Current production layout:
 - MinerU production runner: `.opencode/skills/zotero-fulltext-archiver/scripts/mineru_parse.ps1`（4.1.5 `--tier standard --format zip`；带 free-VRAM 守卫，3.4.0 仅作 fallback）
 - Canonical Analytical Note template: `{{VAULT_ROOT}}\模板\论文简读模板.md`
 
-The stable identity is `paper_id` in `{{PAPER_REGISTRY}}`; `pdf_path` points to the local PDF. `zotero_key`/`pdf_key` are read-only compatibility fields. A title is display-only and may be used for human sanity checks, never as the primary key.
+The stable identity is `paper_id` in `{{PAPER_REGISTRY}}`; `pdf_path` points to the local PDF. A title is display-only and may be used for human sanity checks, never as the primary key.
 
 ## Required specialist Skills
 
 Read the current instructions before each delegated stage:
 
 1. `paper-registry` — resolve/register `paper_id`, `pdf_path`, metadata and collection.
-2. `zotero-data-fetcher` — resolve local PDF/registry data; Zotero only for legacy entries.
+2. `zotero-data-fetcher` — resolve local PDF/registry data.
 3. `zotero-fulltext-archiver` — obtain or validate formal Fulltext from local PDF.
 4. `zotero-analytical-writer` — create or minimally complete the single-paper Analytical Note.
 5. `research-vault-knowledge-maintainer` — decide and perform a justified cross-paper Knowledge update.
@@ -81,7 +81,7 @@ Use exactly one mode for each request:
 
 ## Production rules
 
-- The paper registry must resolve `paper_id` and `pdf_path`; do not use fuzzy title-based disk searches as acquisition. `zotero_key`/`pdf_key` are optional compatibility fields, not gates.
+- The paper registry must resolve `paper_id` and `pdf_path`; do not use fuzzy title-based disk searches as acquisition. Zotero fields are not used.
 - For a needed new MinerU conversion, use the Fulltext Archiver wrapper `scripts/mineru_parse.ps1` (MinerU 4.1.5, `--tier standard`, `--format zip`) with an ASCII `input_<paper_id>.pdf` working copy, matching source/working SHA-256, one paper at a time, and timestamped stdout/stderr. The wrapper must keep its `nvidia-smi` free-VRAM guard (below 12 GB → exit 75). Use the 3.4.0 `hybrid-engine` fallback only when 4.1.5 fails or figure-internal text/appendix qualitative images are required, and then apply the old scoped `mineru.cli.fast_api` cleanup rule.
 - Formal Fulltext is `03fulltext/<collection>/<paper_id>.md`, with resolved image links and `MISSING_IMAGES = 0`. Preserve extracted body text; do not translate, summarize, polish, or Knowledge-ify it.
 - Analytical Note writing belongs solely to `zotero-analytical-writer` and represents single-paper structured understanding. For every new or explicitly normalized Note, use `{{VAULT_ROOT}}\模板\论文简读模板.md` as the structural authority; do not create a duplicate Note merely because an existing Note needs template repair.
@@ -92,7 +92,7 @@ Use exactly one mode for each request:
 - Knowledge writing belongs solely to `research-vault-knowledge-maintainer`. Before every Knowledge write, read `.opencode/skills/research-vault-knowledge-maintainer/references/knowledge-schema.md` and the matching `knowledge-theme-template.md`, `knowledge-concept-template.md`, `knowledge-method-template.md`, `knowledge-relation-template.md`, or `knowledge-controversy-template.md`. Preserve the template's visible section order, tables, boundary sections, gaps, implications, and source tracking; do not substitute a short summary/source-list page. It must retain the frozen schema, Chinese-first human layer, claim sidecars, gap sidecars, and page-creation gate. Update an existing canonical page before considering a new page.
 - When the user asks for a folder, collection, research direction, or all papers, the Knowledge gate must build a coverage ledger and route every in-scope paper to at least one real-path `source_notes` list and template evidence/source section. Report total papers, Fulltext-available papers, Note-only papers, and unresolved coverage before declaring success.
 - Workflow states are not Knowledge evidence enums and must never be inserted into frozen Knowledge schema fields.
-- The visible Knowledge log remains human-readable. Keep raw `paper_id`/`zotero_key`/`pdf_path` in the orchestrator run record or linked Note/Fulltext identity chain, not in visible Knowledge prose or the human-facing log.
+- The visible Knowledge log remains human-readable. Keep raw `paper_id`/`pdf_path` in the orchestrator run record or linked Note/Fulltext identity chain, not in visible Knowledge prose or the human-facing log.
 
 ## Logging and completion
 

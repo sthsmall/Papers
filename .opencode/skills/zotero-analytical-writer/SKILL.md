@@ -1,9 +1,9 @@
 ---
 name: zotero-analytical-writer
-description: "使用本地 PDF/paper_id、MinerU Fulltext 和可选批注，按 {{VAULT_ROOT}}\\模板\\论文简读模板.md 创建新笔记，或对既有笔记做方法段原位重写；确保公式、训练细节、配图与原文引用真实可追溯。Zotero 为可选 legacy。"
+description: "使用本地 PDF/paper_id、MinerU Fulltext 和可选批注，按 {{VAULT_ROOT}}\\模板\\论文简读模板.md 创建新笔记，或对既有笔记做方法段原位重写；确保公式、训练细节、配图与原文引用真实可追溯。只使用本地 PDF 与 Fulltext。"
 ---
 
-# Zotero Analytical Writer
+# Analytical Writer
 
 ## 0. 默认工作习惯（先读 playbook）
 
@@ -134,9 +134,9 @@ description: "使用本地 PDF/paper_id、MinerU Fulltext 和可选批注，按 
 
 保留模板 frontmatter：
 
-`title / aliases / tags / created / source / author / year / type / paper_id / pdf_path / zotero_key / pdf_key / doi / collection / note_path / fulltext_path / task / paradigm / data_scale / method_summary / key_metric / key_result / relevance`
+`title / aliases / tags / created / source / author / year / type / paper_id / pdf_path / doi / collection / note_path / fulltext_path / task / paradigm / data_scale / method_summary / key_metric / key_result / relevance`
 
-- `paper_id` 是主键，`pdf_path` 指向本地 PDF；`zotero_key`/`pdf_key` 只用于旧数据兼容；标题只用于显示与人工核对。
+- `paper_id` 是主键，`pdf_path` 指向本地 PDF；标题只用于显示与人工核对。
 - `task` 写研究任务（输入/输出对象）；`paradigm` 写范式；`data_scale` 写数据集/规模；`method_summary` 写机制摘要（不是模块名堆叠）；`key_metric` / `key_result` 写指标与关键数字；`relevance` 写与本项目的关系。
 - 更新既有笔记时保留稳定身份，不创建重复 Note；新增字段只加可确认的值。
 - 不批量重写未指定的历史笔记。

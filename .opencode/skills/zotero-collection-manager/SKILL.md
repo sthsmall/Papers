@@ -1,9 +1,9 @@
 ---
 name: zotero-collection-manager
-description: "按本地 collection/paper-registry（默认）或 Zotero Collection（可选 legacy）增量调度 Fetcher、Fulltext Archiver、Analytical Writer 和一致性校验，使用可重试状态而不是以“存在笔记”或临时跳过判断完成；默认单篇/小批量运行，支持断点续传。"
+description: "按本地 collection/paper-registry 增量调度 Fetcher、Fulltext Archiver、Analytical Writer 和一致性校验，使用可重试状态而不是以“存在笔记”或临时跳过判断完成；默认单篇/小批量运行，支持断点续传。"
 ---
 
-# Zotero Collection Manager
+# Collection Manager
 
 ## 调度链
 
@@ -26,15 +26,15 @@ Process Log
 ## 默认：本地 registry 模式
 
 - Collection = `02vault/<collection>/` 与 `03fulltext/<collection>/` 目录；不再读 Zotero Collection。
-- 主键 = `{{PAPER_REGISTRY}}` 的 `paper_id`；PDF 路径 = `pdf_path`；Zotero 只在 legacy 条目上按需读取。
+- 主键 = `{{PAPER_REGISTRY}}` 的 `paper_id`；PDF 路径 = `pdf_path`；不读取 Zotero。
 - 新论文先由 `paper-registry register` 落一行，再进入 Fetcher/Fulltext/Writer；不要用标题匹配代替登记。
 - 批量前读 registry + 现有日志；状态机与 `COMPLETE` 条件不变。
 
 ## 增量与安全规则
 
-- 以 `paper_id` 而不是标题作为主键；`zotero_key` 只读 legacy。
+- 以 `paper_id` 而不是标题作为主键；不使用 Zotero 字段。
 - 先读取现有日志；成功条目只在所有核心条件满足时跳过。
-- 默认只处理用户指定的 Collection、单篇或小批量；不得自动批量重跑全库、迁移所有旧笔记或移动 Zotero PDF。
+- 默认只处理用户指定的 Collection、单篇或小批量；不得自动批量重跑全库、迁移所有旧笔记或移动原 PDF。
 - 已有 analytical note 但没有全文时，只补 Fulltext 与链接，不重新生成整篇笔记。
 - **Note 存在不等于完成**：需通过方法段质量门（≥4,500 字符、≥2 个原文公式或明确“原文无公式”、训练细节齐全、≥4 图或注明原文不足、引文可 grep）。未通过时记 `NOTE_QUALITY_FAILED`，回到 Analytical Writer 做方法段修复，而不是以“已有笔记”跳过。
 - **批量前先盘点**：扫描目标 Collection 的分析笔记，按方法段字符数分为 `FULL`（≥4,500）/ `BORDER`（4,000–4,500）/ `PENDING`（<4,000）；不要按“有笔记”直接开跑。

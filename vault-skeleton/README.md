@@ -1,6 +1,6 @@
 # Vault 骨架（vault-skeleton）
 
-本目录是 ResearchVault 的**最小可用骨架**：把这里的目录/文件复制到 `{{VAULT_ROOT}}`，即可让 `.opencode/skills/` 下的本地 PDF + paper-registry 工作流跑起来（Zotero 可选）。
+本目录是 ResearchVault 的**最小可用骨架**：把这里的目录/文件复制到 `{{VAULT_ROOT}}`，即可让 `.opencode/skills/` 下的本地 PDF + paper-registry 工作流跑起来（只用本地 PDF）。
 
 ## 复制方式
 
@@ -22,7 +22,7 @@ xcopy templates "{{VAULT_ROOT}}\模板\" /E /I
 | `01knowledge/.meta/claims/` | claim sidecar（JSON），格式见 `research-vault-knowledge-maintainer/references/knowledge-schema.md` |
 | `01knowledge/.meta/gaps/` | 证据缺口 sidecar |
 | `02vault/_index/文献索引.md` | Analytical Notes 总索引（ingest 时维护） |
-| `03fulltext/` | MinerU 全文归档（按 `<collection>/<zotero_key>.md`） |
+| `03fulltext/` | MinerU 全文归档（按 `<collection>/<paper_id>.md`） |
 | `10_Daily/` | evil-read-arxiv 每日/年度推荐笔记 |
 | `20_Research/Papers/` | evil-read-arxiv 在线分析笔记 |
 | `99_System/Config/research_interests.yaml` | 在线发现层的研究兴趣配置（从 `evil-read-arxiv/config.example.yaml` 生成） |

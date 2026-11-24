@@ -1,8 +1,8 @@
-# Zotero Analytical Workflow Skills + evil-read-arxiv
+# ResearchVault Paper Workflow Skills + evil-read-arxiv
 
 本项目集成了两套文献工作流，作为 opencode 项目级 skill：
 
-1. **Zotero 分析工作流**（`zotero-*` / `research-vault-*`）：Zotero 本地文献库 + MinerU 全文的简读/精读与知识页管理。
+1. **本地论文工作流**（`paper-registry` + `zotero-*` / `research-vault-*`）：本地 PDF + MinerU 全文的定位、简读/精读与知识页管理；不使用 Zotero，`zotero-*` 仅为历史目录名。
 2. **evil-read-arxiv 在线发现**（`start-my-day` 等）：arXiv / Semantic Scholar / DBLP 在线论文推荐与检索，作为互补补上"发现新论文"环节。
 
 覆盖：
@@ -13,7 +13,7 @@
 - 中文简读笔记生成、旧笔记方法段原位重写与配图
 - 知识主题页维护、证据地图与跨论文综合
 - ResearchVault 内的 Note-first 文献检索与原文核验
-- Zotero、Fulltext、精读笔记和 Knowledge 的端到端编排
+- 本地 PDF、Fulltext、简读笔记和 Knowledge 的端到端编排
 - arXiv 每日推荐、顶会检索、在线来源深度分析
 
 ## 目录结构
@@ -26,7 +26,7 @@ Papers/
 ├── AGENTS.example.md        # 脱敏版项目说明；复制为 AGENTS.md 并填写占位符路径
 ├── opencode.json            # skills.paths 注册两个 skill 目录
 ├── .opencode/
-│   └── skills/              # 本项目统一维护的 skill（14 个）
+│   └── skills/              # 本项目统一维护的 skill（13 个）
 │       ├── paper-registry/              # paper_id / papers.tsv
 │       ├── zotero-collection-manager/
 │       ├── zotero-data-fetcher/
@@ -35,7 +35,6 @@ Papers/
 │       ├── research-vault-ingest-orchestrator/
 │       ├── research-vault-knowledge-maintainer/
 │       ├── research-vault-literature-retrieval/
-│       ├── zotero/          # 可选 legacy helper（BibTeX/引用）
 │       ├── obsidian-bases/  # .base 文件
 │       ├── obsidian-cli/    # Obsidian CLI
 │       ├── obsidian-markdown/  # Obsidian 语法
@@ -168,14 +167,14 @@ mineru-kit models verify --tier standard --small-backend torch --vlm-engine lmde
 
 ## 论文身份（paper-registry）
 
-默认不依赖 Zotero；每篇论文用一个稳定 `paper_id`：
+每篇论文用一个稳定 `paper_id`（只用本地 PDF，不使用 Zotero）：
 
 - 已有 8 位 key → 直接沿用（如 `2Q48RTFR`）
 - arXiv → `arxiv_2409.18839`
 - DOI → `doi_...`
 - 其余 → `pdf_<PDF SHA-256 前 12 位>`
 
-登记文件：`{{VAULT_ROOT}}\02vault\_index\papers.tsv`，记录 `paper_id / title / authors / year / venue / doi / arxiv_id / collection / pdf_path / fulltext_path / note_path / status / page_mapping / legacy_zotero_key`。
+登记文件：`{{VAULT_ROOT}}\02vault\_index\papers.tsv`，记录 `paper_id / title / authors / year / venue / doi / arxiv_id / collection / pdf_path / fulltext_path / note_path / status / page_mapping`。
 
 ```powershell
 python .opencode\skills\paper-registry\scripts\paper_registry.py resolve `
@@ -187,14 +186,12 @@ python .opencode\skills\paper-registry\scripts\paper_registry.py validate `
   --registry "{{VAULT_ROOT}}\02vault\_index\papers.tsv" --vault "{{VAULT_ROOT}}"
 ```
 
-`zotero_key` 仅作为 `legacy_zotero_key` 保留；`zotero` skill 只在需要 BibTeX/引用导出时使用。
-
 ## 工作流关系
 
 推荐按下面顺序使用：
 
 1. `paper-registry`：解析本地 PDF、分配 `paper_id`、登记 `papers.tsv`。
-2. `zotero-data-fetcher`：优先读 registry + 本地 PDF；Zotero 模式仅 legacy。
+2. `zotero-data-fetcher`：读 registry + 本地 PDF。
 3. `zotero-fulltext-archiver`：用 `paper_id` + `pdf_path` 归档 MinerU 全文，整理图片/page map，维护 Note 与 Fulltext 关联。
 4. `zotero-analytical-writer`：新笔记按简读模板创建；旧笔记只做 `## 三、方法详解` 原位重写（方法段质量门、配图、引文核验）。
 5. `research-vault-ingest-orchestrator`：按单篇论文编排 `paper_id` 身份、Fulltext、笔记、Knowledge 决策和校验。
@@ -203,7 +200,7 @@ python .opencode\skills\paper-registry\scripts\paper_registry.py validate `
 
 ## 在线发现（evil-read-arxiv）
 
-补上"发现新论文"环节，与本地 Zotero 管线互补：
+补上"发现新论文"环节，与本地论文管线互补：
 
 - `start-my-day`：arXiv + Semantic Scholar 每日推荐（四维评分），生成 `10_Daily/YYYY-MM-DD论文推荐.md`，前 3 篇自动深度分析 + 提图。
 - `conf-papers`：DBLP + S2 顶会检索（CVPR/ICLR/NeurIPS/ICML 等），生成 `10_Daily/{年份}_顶会论文推荐.md`。
@@ -227,7 +224,7 @@ start-my-day / conf-papers 推荐出论文
    ↓ 筛选值得精读的
 paper-analyze 快速预览（可选）
    ↓
-paper-registry register 本地 PDF（arXiv/DOI → paper_id）   ← Zotero 可选
+paper-registry register 本地 PDF（arXiv/DOI → paper_id）
    ↓
         【精读层 · 本地 PDF 工作流】
 ingest-orchestrator / collection-manager 接手
@@ -244,7 +241,7 @@ paper-registry → fetcher → fulltext-archiver → analytical-writer → knowl
 2. **两套笔记并存**：在线分析笔记（`20_Research/Papers/`，快、带图、可含项目页/博客）与精读笔记（`02vault/`，严谨、原文核验）并存；精读笔记是权威层，在线笔记作为快速预览与溯源补充。
 3. **检索分层**：日常文献问题走 `research-vault-literature-retrieval`（Note-first，原文核验）；`paper-search` 仅用于回忆在线分析笔记中的内容。
 4. **功能重叠避免**：`paper-analyze` 不替代 `zotero-analytical-writer`——前者做在线来源（arXiv/PDF/博客）快速分析，后者做本地 PDF 已归档论文的中文精读。
-5. **配置前置**：使用发现层前先完成 `research_interests.yaml` 配置与 Python 依赖安装（见上文"配置"）；使用精读层前先确认 `papers.tsv` 可读、模板已复制到 `{{VAULT_ROOT}}\模板\`。Zotero 不再是前置条件。
+5. **配置前置**：使用发现层前先完成 `research_interests.yaml` 配置与 Python 依赖安装（见上文"配置"）；使用精读层前先确认 `papers.tsv` 可读、模板已复制到 `{{VAULT_ROOT}}\模板\`。
 
 ## 可配置占位符
 
@@ -292,7 +289,7 @@ paper-registry → fetcher → fulltext-archiver → analytical-writer → knowl
 
 ## 路径占位符说明
 
-- Zotero 工作流 skill 原使用 `D:\ResearchVault` 等硬编码路径，已替换为占位符。
+- 本工作流 skill 原使用 `D:\ResearchVault` 等硬编码路径，已替换为占位符。
 - evil-read-arxiv skill 原使用 `$OBSIDIAN_VAULT_PATH` 环境变量，已统一替换为 `{{VAULT_ROOT}}` 占位符；脚本仍保留 `--vault` / `--config` 参数与 `OBSIDIAN_VAULT_PATH` 环境变量兜底。
 - `evil-read-arxiv/web/` 的 `python-bridge.ts` 与 `tests/` 已更新为指向 `evil-read-arxiv/skills/` 新位置。
 
@@ -316,7 +313,6 @@ paper-registry → fetcher → fulltext-archiver → analytical-writer → knowl
 | 环节 | 状态 | 说明 |
 | --- | --- | --- |
 | MinerU 本体 | **需自行安装** | 见上文「MinerU 安装与模型下载」。skill 检测到缺失时会**先询问用户是否安装**，未获明确同意前不执行任何安装/下载；拒绝则转 `FULLTEXT_DEFERRED` |
-| Zotero 访问层 | 已附带 | `.opencode/skills/zotero/scripts/zotero.py`（仅 Python 标准库依赖）；`zotero-*` skill 本身只要求能访问 Zotero 本地 API + Connector，可自行替换实现 |
 | Vault 目录骨架 | 已附带 | `vault-skeleton/`（含 `01knowledge/index.md`、`log.md`、`.meta/`、`02vault/_index/文献索引.md` 等初版） |
 | 写作模板 | 已附带 | `templates/`（`论文简读模板.md`）；知识页模板在 `knowledge-maintainer/references/` |
 | MinerU 批量脚本 | **需自备** | 如 `{{RESEARCH_DIR}}\mineru_batch_runner.py`、`{{VAULT_ROOT}}\tools\run_mineru_production.py`；缺失时直接按 `AGENTS.md` 调用 MinerU CLI |
@@ -328,9 +324,8 @@ paper-registry → fetcher → fulltext-archiver → analytical-writer → knowl
 
 ## 许可证与署名
 
-- 本仓库自研部分（`.opencode/skills/` 中 7 个 `zotero-*`/`research-vault-*`、`templates/`、`vault-skeleton/` 等）：**MIT License**，见 [LICENSE](LICENSE)。
+- 本仓库自研部分（`.opencode/skills/` 中 `paper-registry`、`zotero-*`/`research-vault-*`、Obsidian 与 defuddle/json-canvas 等、`templates/`、`vault-skeleton/`）：**MIT License**，见 [LICENSE](LICENSE)。
 - `evil-read-arxiv/`：版权归 [juliye2025](https://github.com/juliye2025/evil-read-arxiv)，**MIT License**，以 vendor 方式整合。
-- `.opencode/skills/zotero/`：第三方 helper skill，**上游许可证未声明**，公开再分发前请先确认授权（详见 [NOTICE](NOTICE)）。
 - 完整第三方署名见 [NOTICE](NOTICE)。
 
 ## 仓库不包含的内容

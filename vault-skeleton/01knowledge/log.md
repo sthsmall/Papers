@@ -10,7 +10,7 @@
 ## YYYY-MM-DD（可选：本次主题）
 
 **论文**：<标题>（<作者/会议>）
-**Zotero key**：<zotero_key>
+**paper_id**：<paper_id>
 **Fulltext 状态**：<已归档 / 复用既有 / 缺失原因>
 **Analytical Note 状态**：<已创建 / 已更新 / 按模板修复>
 **Knowledge 动作**：<NO_KNOWLEDGE_CHANGE / 创建或更新某知识页（evidence_count=N, 证据等级）>

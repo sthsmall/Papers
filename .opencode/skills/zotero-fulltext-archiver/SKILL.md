@@ -1,9 +1,9 @@
 ---
 name: zotero-fulltext-archiver
-description: "将本地 PDF（默认，paper_id + pdf_path）或历史 MinerU 输出归档为可追踪的 ResearchVault Fulltext Markdown：先复用已成功的 MinerU 链路，再写入统一 frontmatter、整理安全图片路径、保留页面映射并执行只读校验。Zotero 为可选 legacy。此技能不做中文总结、不改写论文正文、不负责用户检索。"
+description: "将本地 PDF（默认，paper_id + pdf_path）或历史 MinerU 输出归档为可追踪的 ResearchVault Fulltext Markdown：先复用已成功的 MinerU 链路，再写入统一 frontmatter、整理安全图片路径、保留页面映射并执行只读校验。只用本地 PDF。此技能不做中文总结、不改写论文正文、不负责用户检索。"
 ---
 
-# Zotero Fulltext Archiver
+# Fulltext Archiver
 
 ## MinerU 4.1.5 primary / 3.4.0 fallback (Windows GPU)
 
@@ -15,7 +15,7 @@ and checks `nvidia-smi` free VRAM first: below **12 GB** it exits with code
 explicitly asks; the GPU is shared with the user's experiments.
 
 Use an ASCII-only *working copy* in a scoped temporary run directory. The
-Zotero attachment remains read-only. Record the source and working-copy
+The source PDF remains read-only. Record the source and working-copy
 SHA-256 values and do not invoke MinerU until they match. Give a complete
 article a hard limit of at least 30 minutes (4.1.5 is usually much faster);
 a no-progress stop may be used only after 10--15 minutes during which stdout,
@@ -49,9 +49,9 @@ against the read-only Original PDF.
 
 ## 职责边界
 
-执行：`本地 PDF → MinerU → Fulltext Markdown → 图片整理 → metadata → Note 关联 → validation`（Zotero 可选 legacy）。
+执行：`本地 PDF → MinerU → Fulltext Markdown → 图片整理 → metadata → Note 关联 → validation`。
 
-不执行中文翻译、分析笔记写作、批量检索或 Zotero 数据库改写。
+不执行中文翻译、分析笔记写作、批量检索或外部文献管理器改写。
 
 ## 1. 先确认实际 MinerU 环境
 
@@ -113,7 +113,6 @@ type: literature-fulltext
 title: "..."
 paper_id: "Q22PFLNV"
 pdf_path: "D:/papers/Q22PFLNV.pdf"
-zotero_key: "Q22PFLNV"   # 可选，legacy only
 doi: "..."
 collection: "创新经济地理"
 note_path: "02vault/创新经济地理/论文标题.md"
@@ -123,7 +122,7 @@ page_mapping: "page_maps/Q22PFLNV.json"
 ---
 ```
 
-`paper_id` 是默认主键；`zotero_key`（legacy）、`zotero_item`、`zotero_pdf` 只在旧数据中保留。新论文不需要 Zotero。
+`paper_id` 是唯一主键；frontmatter 不再写任何 Zotero 字段。
 
 Vault 内部路径统一使用 `/`。缺失的 DOI 可留空，但不得伪造。
 
@@ -167,6 +166,6 @@ python ".opencode\skills\zotero-fulltext-archiver\scripts\arrange_figure_rows.py
 归档完成后：
 
 1. 分析笔记补 `fulltext_path`，并可增加 `[[fulltext/<collection>/<paper_id>]]` 入口；不因全文归档重写整篇笔记，模板化重排由 `zotero-analytical-writer` 单独负责。
-2. Fulltext 补 `note_path`，确认双方 `paper_id` 一致；`zotero_key`/`pdf_key` 只作旧数据兼容。
+2. Fulltext 补 `note_path`，确认双方 `paper_id` 一致。
 3. 运行链接校验脚本（**可选，需自备**）：`{{RESEARCH_DIR}}\zotero_batch\validate_research_vault_literature_links.py`；脚本缺失时改为逐项核对下一条的双向链接要求，只报告，不自动删除。
 4. 只有 PDF、Fulltext、图片、Note、链接均有效时，才向 Collection Manager 报告 COMPLETE。

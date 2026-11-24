@@ -22,7 +22,7 @@
 ## 使用注意
 
 - 上述目录可能尚未创建。执行 skill 流程前先 `Test-Path` 确认；缺失时向用户确认，不要自动批量创建。
-- **论文身份默认用 `paper_id`**：先查 `{{PAPER_REGISTRY}}`；已有 8 位 key 直接沿用，arXiv 用 `arxiv_<id>`，DOI 用 `doi_...`，其余用 `pdf_<SHA-256 前 12 位>`。`zotero_key` 只保留为 `legacy_zotero_key`，默认不启动 Zotero。
+- **论文身份默认用 `paper_id`**：先查 `{{PAPER_REGISTRY}}`；已有 8 位 key 直接沿用，arXiv 用 `arxiv_<id>`，DOI 用 `doi_...`，其余用 `pdf_<SHA-256 前 12 位>`。不使用 Zotero 字段。
 - 新论文先用 `.opencode/skills/paper-registry/scripts/paper_registry.py resolve/register` 登记 `paper_id`、`pdf_path`、`collection`，再走 MinerU / Fulltext / Writer；不要在标题上猜 ID。
 - **MinerU 默认 4.1.5（GPU）**：单篇优先调用 `{{MINERU_PARSE_PS1}} -Pdf <pdf> -Out <out> -Tier standard`。脚本先查 `nvidia-smi` 的 free，低于 12 GB 直接退出（exit 75），避免和用户实验抢显存。4.1.5 需要 `MINERU_HOME={{MINERU415_HOME}}`、`MINERU_MODEL_SOURCE=local`；VLM 仍是 `MinerU2.5-Pro-2605-1.2B`，小模型是 `MinerU-4_models_torch`。
 - 4.1.5 输出 zip：`markdown.md` / `middle_json.json` / `structured_content.json` / `images/`。`structured_content.json` 每个 block 带 `page_idx` 和归一化 bbox；用 `.opencode/skills/zotero-fulltext-archiver/scripts/build_page_map.py` 生成 `page_map.json`，可回填 fulltext 的 `page_mapping`。
@@ -36,8 +36,8 @@
 - **简读笔记质量门**：新笔记按 `论文简读模板.md` 创建；旧笔记只做 `## 三、方法详解` 原位重写，保留贡献/结果/判断章节。方法段 ≥4,500 字符（短论文 ≥4,000）；有公式的论文 ≥2 个原文公式，无公式则注明；训练细节、结果/消融/边界齐全；≥4 图或注明原文不足；引文用 Fulltext grep 命中并标注页码状态。
 - **笔记迁移习惯**：批量迁移按 `.opencode/skills/zotero-analytical-writer/references/note-migration-playbook.md` 执行；验收用 `.opencode/skills/zotero-analytical-writer/scripts/scan_note_quality.py`，并同步 `02vault/_index/文献索引.md` 的 `方法段` 列与 `02vault/_index/笔记重写状态.md`。批次报告不能替代独立扫描。
 - 涉及文献检索/精读/知识库任务时，优先加载对应的 `research-vault-*`、`paper-registry` 与必要的 `zotero-*` skill（位于 `.opencode/skills/`），遵循其流程与证据规则。
-- **Zotero 是可选的 legacy**：默认入库/全文/笔记流程不启动 Zotero，也不要求 `zotero_key`。仅当需要 BibTeX/引用导出或读取旧批注时，才使用本地 API（默认端口 `23119`）/ Connector；旧 `zotero_key` 保留为 `legacy_zotero_key` 只读。可选 helper：`.opencode/skills/zotero/scripts/zotero.py`。
+- **不使用 Zotero**：身份、全文、笔记与知识库全部以 `paper_id` + 本地 PDF 为准；仓库内不保存 `zotero_key`、`pdf_key` 或 `zotero://` 链接。helper：`.opencode/skills/zotero/scripts/zotero.py`。
 - **Vault 初始化**：把 `vault-skeleton/` 复制到 `{{VAULT_ROOT}}`（提供 `01knowledge/index.md`、`log.md`、`.meta/`、`02vault/_index/文献索引.md` 等初版），再把 `templates/` 复制到 `{{VAULT_ROOT}}\模板\`。
-- **本地 PDF 默认**：论文 PDF 存放于 `{{RESEARCH_DIR}}\papers\`，由 `{{PAPER_REGISTRY}}` 的 `pdf_path` 指向；只把 MinerU 全文归档到 Vault。Zotero 云存储/附件完整性不再作为前置条件。
+- **本地 PDF 默认**：论文 PDF 存放于 `{{RESEARCH_DIR}}\papers\`，由 `{{PAPER_REGISTRY}}` 的 `pdf_path` 指向；只把 MinerU 全文归档到 Vault，不依赖任何文献管理器。
 - **arXiv/顶会在线发现**：`start-my-day`、`conf-papers`、`extract-paper-images`、`paper-search`、`paper-analyze`（位于 `evil-read-arxiv/skills/`）。依赖 Python 环境（见 `evil-read-arxiv/requirements.txt`），研究兴趣配置位于 `{{VAULT_ROOT}}/99_System/Config/research_interests.yaml`（可复制 `evil-read-arxiv/config.example.yaml` 生成）。
 - 两个 skill 目录（`.opencode/skills/` 与 `evil-read-arxiv/skills/`）通过 `opencode.json` 的 `skills.paths` 注册。

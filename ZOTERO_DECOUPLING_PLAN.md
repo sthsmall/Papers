@@ -1,6 +1,6 @@
 # 去 Zotero 化：ResearchVault 论文身份与本地 PDF 工作流
 
-> 状态：**P0/P1/P2 已实施（2026-11-15）；24 篇 key_pending 待归档；Zotero 已降为可选 legacy**
+> 状态：**已完成（2026-11-24）：Zotero 字段、`zotero://` 链接与 legacy `zotero` skill 已全部移除；本文件仅作历史记录**
 > 日期：2026-11-15  
 > 目标：停止把 Zotero 作为必选依赖，用「本地 PDF + paper_id + 本地 registry」完成入库、全文、笔记和检索。
 

@@ -15,9 +15,9 @@
 
 ---
 
-## zotero（helper skill）
+## zotero（helper skill，已停用）
 
-- 位置：`.opencode/skills/zotero/`
+- 位置：`.opencode/skills-disabled/zotero/`（不随 skill 列表加载）
 - 来源：Zotero skill for Codex（随 opencode/Codex 生态分发的辅助技能）
 - 许可证：**上游未声明许可证（未核实）**。本仓库仅作工作流依赖整合；如需公开再分发，请先向上游确认授权，或仅保留自实现的替代 helper。
 - 说明：提供 `scripts/zotero.py`——仅依赖 Python 标准库的 Zotero Desktop 本地 API（`http://127.0.0.1:23119`）与 Connector 封装，用于元数据读取、BibTeX/RIS 导入、索引全文读取等。
@@ -39,5 +39,5 @@
 
 - **opencode**：skill 运行时（本仓库通过 `opencode.json` 的 `skills.paths` 注册 skill）。
 - **MinerU**：PDF → Markdown 全文解析（未内嵌）。
-- **Zotero Desktop**：文献库与本地 API。
+- **Zotero Desktop**：已停用；历史 helper 仅存档在 `skills-disabled/`。
 - **Python 依赖**：见 `evil-read-arxiv/requirements.txt`。

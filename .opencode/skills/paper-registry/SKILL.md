@@ -5,7 +5,7 @@ description: "本地论文身份与元数据登记：为 PDF 生成稳定 paper_
 
 # Paper Registry
 
-本地优先的论文身份层。默认不再依赖 Zotero；`zotero_key` 只作为 legacy 字段保留。
+本地优先的论文身份层。身份只由 `paper_id` + 本地 `pdf_path` 决定，不使用 Zotero。
 
 ## 职责
 
@@ -60,24 +60,22 @@ $reg = "{{VAULT_ROOT}}\02vault\_index\papers.tsv"
 
 ```text
 paper_id  title  authors  year  venue  doi  arxiv_id  collection
-pdf_path  fulltext_path  note_path  status  page_mapping  legacy_zotero_key
+pdf_path  fulltext_path  note_path  status  page_mapping
 ```
 
 - `status`：`PDF_ONLY` / `FULLTEXT_OK` / `NOTE_OK` / `COMPLETE` / `DEFERRED`
 - `page_mapping`：`page_maps/<paper_id>.json` 或 `unknown`
-- `legacy_zotero_key`：旧 8 位 key，只读；新流程不依赖
 
 ## 与其他 skill 的衔接
 
 - `zotero-data-fetcher`：优先读 registry；无 registry 记录时用 `resolve` 生成。
-- `zotero-fulltext-archiver`：用 `paper_id` + `pdf_path`，`zotero_key` 可选。
-- `zotero-analytical-writer`：从 registry/fulltext frontmatter 取元数据；Zotero 批注可选。
+- `zotero-fulltext-archiver`：用 `paper_id` + `pdf_path`。
+- `zotero-analytical-writer`：从 registry/fulltext frontmatter 取元数据；批注可选（本地）。
 - `research-vault-ingest-orchestrator`：身份门改为 `paper_id` + PDF 存在。
-- `zotero` skill：可选 legacy，只用于 BibTeX/引用导出。
 
 ## 约束
 
 - 不移动、不重命名已有论文 PDF/Fulltext/Note。
 - 不把标题当唯一主键；冲突时报告，不覆盖。
-- 不自动写入 Zotero；Zotero 不是默认依赖。
+- 不写入任何外部文献管理器；身份与元数据只存在 papers.tsv。
 - `papers.tsv` 是本地状态文件；批量改动前先 `validate`，改后复验。

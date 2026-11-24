@@ -19,14 +19,14 @@ These paths take precedence over legacy folder names appearing in historical not
 
 - Read the analytical-note indexes in `02vault/_index/` first: `文献索引.md`, `研究主题索引.md`, `研究方法索引.md`, and `字段补全检查.md` when present.
 - Compile from Analytical Notes. Do not begin discovery from `fulltext/`.
-- Resolve every scientific claim to one or more `paper_id` values and Analytical Notes; `zotero_key` is legacy only. For exact wording, definitions, model details, coefficients, formulas, or mechanisms, follow the note's `fulltext_path` and make a targeted search there.
+- Resolve every scientific claim to one or more `paper_id` values and Analytical Notes. For exact wording, definitions, model details, coefficients, formulas, or mechanisms, follow the note's `fulltext_path` and make a targeted search there.
 - Treat a Knowledge Page as a derived artifact. It may link to pages for navigation, but never use a Knowledge Page as evidence for another scientific claim.
 - On incremental ingestion, re-evaluate the prior synthesis against the new Analytical Note; do not treat prior knowledge text as supporting evidence.
 - A same-path Analytical Note template repair is a presentation/traceability maintenance action, not by itself a new scientific contribution. Re-check source-note resolution and validator coverage, but do not create or revise a Knowledge Page solely because the Note was normalized to `{{VAULT_ROOT}}\模板\论文简读模板.md`.
 - Prefer updating an existing canonical page over creating a synonym. Use `aliases` for Chinese/English names and common variants.
 - Preserve disagreement. Use `agreement: mixed`, `conflicting`, or `insufficient` where the current Vault evidence does not support a single conclusion. Label explanations not stated by papers as `interpretation`.
 - Create a page only for a durable theme, recurrent method, shared relationship, real controversy, or clearly important emerging concept. Do not create one-node-per-term pages.
-- Do not alter Zotero, MinerU Fulltext, existing analytical notes, or normal paper-oriented indexes unless explicitly requested.
+- Do not alter MinerU Fulltext, existing analytical notes, or normal paper-oriented indexes unless explicitly requested.
 
 ## Frozen schema
 
@@ -67,7 +67,7 @@ The template frontmatter is a writing contract; the frozen Knowledge schema is a
 
 For every paper used in a Knowledge Page, parse both layers before writing a claim:
 
-- **Structural library layer:** the Analytical Note frontmatter and structured sections (`paper_id`, `pdf_path`, `task`, `paradigm`, `data_scale`, `method_summary`, `key_metric`, `key_result`, `relevance`, limitations, formulas, quotes, `fulltext_path`, and optional legacy `zotero_key`; historical Notes using the old field names `theme`/`study_area`/`data_source`/`methodology`/`core_variable`/`key_finding` map to these equivalents).
+- **Structural library layer:** the Analytical Note frontmatter and structured sections (`paper_id`, `pdf_path`, `task`, `paradigm`, `data_scale`, `method_summary`, `key_metric`, `key_result`, `relevance`, limitations, formulas, quotes, `fulltext_path`, ; historical Notes using the old field names `theme`/`study_area`/`data_source`/`methodology`/`core_variable`/`key_finding` map to these equivalents).
 - **Original-text layer:** the linked `03fulltext` Markdown, or the original PDF when Fulltext is absent or a page-level detail needs verification. Search the original text for the exact result, definition, mechanism, threshold, formula, limitation, and qualifying condition being written.
 
 The Note supplies the structured map; the Fulltext supplies the primary evidence. Do not write a precise coefficient, threshold, formula, mechanism, or quotation from the Note alone when a linked Fulltext exists. If Fulltext is unavailable, mark the claim `note_supported`, record the missing-verification boundary, and do not invent a page number or quote.
@@ -103,7 +103,7 @@ All user-facing Knowledge titles, headings, synthesis, evidence descriptions, ga
 7. Refresh the knowledge-oriented `01knowledge/index.md`, append (never rewrite) an entry in `01knowledge/log.md`, and record created/updated/unchanged pages, coverage counts, Fulltext counts, and unresolved items.
 8. Run the Knowledge validator and a template/coverage audit. Fix only conservative structural issues; never delete a knowledge page automatically.
 
-The lint reports page classes, orphan pages, missing evidence, broken note links, invalid Zotero keys, evidence-count mismatches, duplicate titles, alias conflicts, invalid relations, note-only versus Fulltext-verified states, possible relationship contradictions, and stale pages.
+The lint reports page classes, orphan pages, missing evidence, broken note links, invalid paper ids, evidence-count mismatches, duplicate titles, alias conflicts, invalid relations, note-only versus Fulltext-verified states, possible relationship contradictions, and stale pages.
 
 ## Required frontmatter
 
@@ -113,7 +113,7 @@ Use statuses `emerging`, `developing`, `established`, `conditional`, or `contest
 
 ## Human-readable Citation Rule
 
-Knowledge pages must cite papers through real-path Analytical Note links with concise human-readable aliases, for example `[[02vault/能耗/Urban 3D building morphology and energy consumption empirical evidence from 53 cities in China|53城三维形态—用电]]`. Raw Zotero keys must not appear in normal user-facing Knowledge prose, frontmatter properties, index pages, or maintenance-log entries.
+Knowledge pages must cite papers through real-path Analytical Note links with concise human-readable aliases, for example `[[02vault/能耗/Urban 3D building morphology and energy consumption empirical evidence from 53 cities in China|53城三维形态—用电]]`. Raw external-library keys must not appear in normal user-facing Knowledge prose, frontmatter properties, index pages, or maintenance-log entries.
 
 ### Human-readable Link Target Rule
 
