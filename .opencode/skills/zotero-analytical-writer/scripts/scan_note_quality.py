@@ -87,8 +87,6 @@ def scan(vault):
                 flags.append("formula<2-no-note")
             if mlen >= 4500 and not has_quote:
                 flags.append("no-quote-section")
-            if not fm.get("zotero_key"):
-                flags.append("empty-zotero-key")
             if not fm.get("fulltext_path"):
                 flags.append("empty-fulltext-path")
             status = "FULL" if mlen >= 4500 else ("BORDER" if mlen >= 4000 else "PENDING")

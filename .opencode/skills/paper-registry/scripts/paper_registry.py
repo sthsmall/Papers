@@ -14,7 +14,7 @@ import sys
 COLUMNS = [
     "paper_id", "title", "authors", "year", "venue", "doi", "arxiv_id",
     "collection", "pdf_path", "fulltext_path", "note_path", "status",
-    "page_mapping", "legacy_zotero_key",
+    "page_mapping",
 ]
 
 
@@ -97,7 +97,6 @@ def cmd_resolve(args) -> int:
         "note_path": "",
         "status": "PDF_ONLY" if args.pdf else "DEFERRED",
         "page_mapping": "unknown",
-        "legacy_zotero_key": "",
     }
     print(json.dumps(out, ensure_ascii=False, indent=2))
     return 0
