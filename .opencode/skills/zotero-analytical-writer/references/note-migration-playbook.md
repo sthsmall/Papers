@@ -26,20 +26,20 @@
 
 ```powershell
 python .opencode/skills/zotero-analytical-writer/scripts/scan_note_quality.py `
-  --vault "{{VAULT_ROOT}}" --json note_scan.json
+  --vault "{{VAULT_ROOT}}" --gaps --json note_scan.json
 ```
 
-退出码 1 表示存在硬性失败（缺方法段、旧方法标题、重复标题、图片缺失、空 fulltext_path）。
+退出码 1 表示存在硬性失败（缺方法段、旧方法标题、重复标题、图片缺失、空 fulltext_path）。`--gaps` 会额外报告方法段九项完整性与未核验页码；加 `--strict` 可让这些缺口也失败。
 
 ## 2. 单篇流程
 
-1. **读身份**：frontmatter、`fulltext_path`、现有非方法章节；确认 `paper_id` 是否存在（legacy `zotero_key` 可选）。
-2. **读全文**：先看 Fulltext 的章节标题，定位 Method / Implementation / Training / Experiments / Ablation / Limitation；按行范围读，不整篇泛读。
-3. **写方法段**：按“问题 → 数据流（文字图）→ 逐模块机制 → 训练/推理配置 → 主结果/消融/反常 → 边界”组织；公式保留原文编号，训练缺项写“论文未给”。
+1. **读身份**：frontmatter、`fulltext_path`、现有非方法章节；确认 `paper_id` 是否存在。
+2. **读全文**：先看 Fulltext 的章节标题，定位 Method / Implementation / Training / Experiments / Ablation / Limitation；按行范围读，不整篇泛读。正文与附录都要读——参数预算、损失权重、推理阈值常在附录。
+3. **写方法段**：对照 `论文简读模板.md` 的九项清单逐项写：任务与符号（形状/token 数）、总体架构与参数预算（共享/冻结/可训练）、逐模块机制（问题 → I/O → 算子/公式 → 动机 → 证据）、≥2 原文公式、训练配置、推理规则（阈值/门控/后处理/延迟）、结果与消融（含交互 vs 单项）、边界与失效、配图与引文。缺项写“论文未给 / 原文无公式 / 原文仅 n 图”，不静默略过。
 4. **原位替换**：用正则按 `## 方法` / `## 研究方法` 到下一个 `## ` 的区间替换；替换后检查前后缀（frontmatter 和其他章节）未变，不能出现第二个方法标题。
 5. **配图**：从 `03fulltext/<collection>/images/<key>/` 选 4 张左右（架构/数据/主结果/定性或消融）；相对路径 `../../03fulltext/...`；逐条确认文件存在。原文不足 4 张就全嵌入并注明“原文仅 n 图，未凑数”；图注写“这张图说明什么”，不要只写 Figure 3。
-6. **引文核验**：加 `#### 引文核验`，至少 3 条逐字英文引文 + “PDF 页码未验证”；引文先在 Fulltext 里 grep，不用中文摘要反推英文。OCR 连写/空格/LaTeX 排版差异按原文照录并注明。
-7. **自检**：方法段长度、公式数、训练细节、图片数、引文命中、YAML、双向链接。
+6. **引文核验**：加 `#### 引文核验`，至少 3 条逐字英文引文；引文先在 Fulltext 里 grep，不用中文摘要反推英文。页码用原 PDF 或 `page_maps/<paper_id>.json` 核验后再写“PDF 第 n 页”，只有确实无法核验才写“PDF 页码未验证”。OCR 连写/空格/LaTeX 排版差异按原文照录并注明。
+7. **自检**：方法段九项清单逐项打勾；长度、公式数、训练与推理细节、图片路径、引文命中与页码、YAML、双向链接全部检查。
 
 可参考已达标样例：`02vault/VOS/Putting the Object Back into Video Object Segmentation.md`（Cutie，对象级记忆读取）、`02vault/MOT/Selective Mask Propagation for Multi-Object Tracking.md`（SMP，按需调度 VOS）、`02vault/MOT/Detecting Object Tracking Failure via Sequential Hypothesis Testing.md`（序贯检验）。它们展示了本 playbook 的密度、公式解释、反常结果与边界写法。
 
@@ -55,6 +55,8 @@ python .opencode/skills/zotero-analytical-writer/scripts/scan_note_quality.py `
 - YAML 解析失败；
 - 残留 `## 方法` / `## 研究方法`；
 - 重复 `## 三、方法详解`。
+
+方法完整性缺口（默认软性，写进状态页；`--strict` 时阻塞）：任务与符号 / 总体架构 / 逐模块机制 / 数学细节 / 训练配置 / 推理规则 / 结果与消融 / 边界 / 计算开销 任一缺失，以及 `PDF 页码未验证` 未清零。
 
 软性提醒（写进状态页，不阻塞）：
 

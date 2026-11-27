@@ -36,10 +36,10 @@ Process Log
 - 先读取现有日志；成功条目只在所有核心条件满足时跳过。
 - 默认只处理用户指定的 Collection、单篇或小批量；不得自动批量重跑全库、迁移所有旧笔记或移动原 PDF。
 - 已有 analytical note 但没有全文时，只补 Fulltext 与链接，不重新生成整篇笔记。
-- **Note 存在不等于完成**：需通过方法段质量门（≥4,500 字符、≥2 个原文公式或明确“原文无公式”、训练细节齐全、≥4 图或注明原文不足、引文可 grep）。未通过时记 `NOTE_QUALITY_FAILED`，回到 Analytical Writer 做方法段修复，而不是以“已有笔记”跳过。
+- **Note 存在不等于完成**：需通过方法段质量门（模板九项清单逐项齐全：任务与符号 / 总体架构 / 逐模块机制 / ≥2 原文公式 / 训练配置 / 推理规则 / 结果与消融 / 边界 / 配图与引文；≥4,500 字符，≥4 图或注明原文不足，引文可 grep 且页码已核验）。未通过时记 `NOTE_QUALITY_FAILED`，回到 Analytical Writer 做方法段修复，而不是以“已有笔记”跳过。
 - **批量前先盘点**：扫描目标 Collection 的分析笔记，按方法段字符数分为 `FULL`（≥4,500）/ `BORDER`（4,000–4,500）/ `PENDING`（<4,000）；不要按“有笔记”直接开跑。
 - **批量按 playbook 执行**：读 `.opencode/skills/zotero-analytical-writer/references/note-migration-playbook.md`；逐篇读 Fulltext 的方法/训练/结果/消融/局限，只替换方法段，保留其他章节。
-- **批量后收口**：先跑 `.opencode/skills/zotero-analytical-writer/scripts/scan_note_quality.py --vault "{{VAULT_ROOT}}"`（exit 1 为硬失败），再更新 `02vault/_index/文献索引.md` 的 `方法段` 列，重建 `02vault/_index/笔记重写状态.md`，追加 `01knowledge/log.md`；未跑全库扫描不得报 `COMPLETE`。
+- **批量后收口**：先跑 `.opencode/skills/zotero-analytical-writer/scripts/scan_note_quality.py --vault "{{VAULT_ROOT}}" --gaps`（exit 1 为硬失败；`--gaps` 列出方法完整性与未核验页码缺口，必要时 `--strict` 让缺口也失败），再更新 `02vault/_index/文献索引.md` 的 `方法段` 列，重建 `02vault/_index/笔记重写状态.md`，追加 `01knowledge/log.md`；未跑全库扫描不得报 `COMPLETE`。
 - 当批次请求包含 Knowledge 整理或“全部论文”时，批次调度必须先读取 `.opencode/skills/research-vault-knowledge-maintainer/references/knowledge-schema.md` 和对应的 `knowledge-theme-template.md` / `knowledge-concept-template.md` / `knowledge-method-template.md` / `knowledge-relation-template.md` / `knowledge-controversy-template.md`，并建立逐篇 coverage ledger；不能以“已有笔记”或“已生成综合页”代替 Knowledge 覆盖。
 - Knowledge 写作必须同时解析 Analytical Note 的结构化字段和对应 `{{VAULT_ROOT}}\03fulltext` 原文。Fulltext 可用时，精确结论、公式、阈值、机制和引语必须回到原文核验；Fulltext 缺失时只能保留 `note_supported` / `FULLTEXT_DEFERRED`，不得补写页码或反向生成引语。
 - 批次完成条件包括：每篇论文至少进入一个真实 `source_notes`，页面使用当前 Knowledge schema 与 references 模板的完整可见章节，覆盖账本无未解释遗漏，且 Knowledge validator 与模板审查均通过。

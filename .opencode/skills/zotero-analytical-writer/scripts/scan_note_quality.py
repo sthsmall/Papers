@@ -3,13 +3,17 @@
 
 Usage:
   python scan_note_quality.py --vault "D:\\path\\to\\researchVault"
+  python scan_note_quality.py --vault ... --gaps          # list per-note method gaps
+  python scan_note_quality.py --vault ... --strict        # gaps also fail the run
   python scan_note_quality.py --vault ... --json out.json
 
 Exits 1 when a hard failure is found (broken image, YAML error, legacy method
-heading, duplicate method heading, missing method section).
+heading, duplicate method heading, missing method section, etc.). With
+--strict, method-completeness gaps are also counted as hard failures.
 """
 
 import argparse
+import collections
 import json
 import os
 import re
@@ -22,6 +26,27 @@ except ImportError:
 
 COLLECTIONS = ["MOT", "SAM", "VOS", "RS", "VIS"]
 TRANSLATION_MARKERS = ("中文全译",)
+
+# Method-completeness dimensions. A gap is reported when none of the keywords
+# appears in the chosen scope. "论文未给" / "原文无公式" count as explicit
+# waivers, not omissions.
+COMPLETENESS_CHECKS = [
+    ("task-io", "note", ("输入", "输出", "task", "input", "output", "token", "张量", "尺寸")),
+    ("architecture", "method", ("架构", "总体", "共享", "冻结", "编码器", "backbone", "模块")),
+    ("module-mechanism", "method", ("模块", "算子", "注意力", "attention", "门控", "匹配", "公式")),
+    ("math-formula", "method", ("$$", "公式", "原文无公式", "无公式")),
+    ("train-config", "note", ("优化器", "Adam", "学习率", "lr", "batch", "epoch", "迭代", "论文未给", "原文未给")),
+    ("loss-detail", "note", ("损失", "loss", "权重", "BCE", "focal", "dice", "IoU", "论文未给")),
+    ("inference-rule", "note", ("推理", "阈值", "门控", "后处理", "NMS", "top-", "延迟", "论文未给")),
+    ("ablation-evidence", "note", ("消融", "ablation", "去掉", "Table", "表 ", "表")),
+    ("boundary", "note", ("边界", "局限", "失效", "失败", "域差", "未报告", "SOT", "单来源")),
+    ("compute-cost", "note", ("参数", "FLOPs", "FPS", "显存", "算力", "论文未给")),
+]
+HARD_PREFIXES = (
+    "missing-method-section", "legacy-method-heading",
+    "duplicate-method-heading", "broken-image", "empty-fulltext-path",
+    "img<4-no-note", "formula<2-no-note", "no-quote-section",
+)
 
 
 def read(path):
@@ -43,6 +68,20 @@ def method_section(text):
         return m.group(1)
     m = re.search(r"^##\s*(?:研究方法|方法)\s*\n(.*?)(?=^##\s)", text, re.S | re.M)
     return m.group(1) if m else ""
+
+
+def method_gaps(text, body):
+    """Return soft completeness gaps for a note's method section."""
+    gaps = []
+    for name, scope, keywords in COMPLETENESS_CHECKS:
+        hay = body if scope == "method" else text
+        if not any(k in hay for k in keywords):
+            gaps.append(name)
+    # Page verification is a separate, high-value check.
+    n_unverified = text.count("PDF 页码未验证")
+    if n_unverified:
+        gaps.append(f"quote-page-unverified:{n_unverified}")
+    return gaps
 
 
 def scan(vault):
@@ -92,7 +131,8 @@ def scan(vault):
             status = "FULL" if mlen >= 4500 else ("BORDER" if mlen >= 4000 else "PENDING")
             rows.append(dict(collection=col, file=name, status=status,
                              method_chars=mlen, images=len(imgs),
-                             formulas=formulas, flags=flags))
+                             formulas=formulas, flags=flags,
+                             gaps=method_gaps(text, body)))
     return rows
 
 
@@ -100,13 +140,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--vault", required=True, help="ResearchVault root")
     ap.add_argument("--json", help="write JSON result")
+    ap.add_argument("--gaps", action="store_true", help="list method-completeness gaps per note")
+    ap.add_argument("--strict", action="store_true", help="treat method gaps as hard failures")
     args = ap.parse_args()
 
     rows = scan(args.vault)
-    hard_prefixes = ("missing-method-section", "legacy-method-heading",
-                     "duplicate-method-heading", "broken-image", "empty-fulltext-path",
-                     "img<4-no-note", "formula<2-no-note", "no-quote-section")
-    hard = [r for r in rows if any(f.startswith(hard_prefixes) for f in r["flags"])]
+    hard = [r for r in rows if any(f.startswith(HARD_PREFIXES) for f in r["flags"])]
+    with_gaps = [r for r in rows if r["gaps"]]
+    strict_hard = [r for r in with_gaps] if args.strict else []
 
     print(f"{'col':4s} {'status':7s} {'chars':>6s} {'img':>4s} {'form':>4s}  note / flags")
     for r in sorted(rows, key=lambda x: (x["collection"], x["status"], x["method_chars"])):
@@ -123,12 +164,26 @@ def main():
     print("TOTAL", len(rows), "FULL", sum(r["status"] == "FULL" for r in rows),
           "HARD", len(hard))
 
+    print("\nMETHOD COMPLETENESS (soft; use --strict to fail on these)")
+    counter = collections.Counter()
+    for r in with_gaps:
+        for g in r["gaps"]:
+            counter[g.split(":")[0]] += 1
+    for key, n in counter.most_common():
+        print(f"  {key:26s} {n}")
+    print("notes-with-gaps", len(with_gaps), "strict-hard", len(strict_hard))
+
+    if args.gaps:
+        print("\nPER-NOTE GAPS")
+        for r in sorted(with_gaps, key=lambda x: (-len(x["gaps"]), x["collection"], x["file"])):
+            print(f"  {r['collection']:4s} {r['file'][:64]:64s} {','.join(r['gaps'])}")
+
     if args.json:
         with open(args.json, "w", encoding="utf-8") as fh:
             json.dump(rows, fh, ensure_ascii=False, indent=1)
         print("wrote", args.json)
 
-    return 1 if hard else 0
+    return 1 if (hard or strict_hard) else 0
 
 
 if __name__ == "__main__":
